@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net40;net461</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClaimsTransformation.Engine\ClaimsTransformation.Engine.csproj" />
+    <ProjectReference Include="..\ClaimsTransformation.Language\ClaimsTransformation.Language.csproj" />
+  </ItemGroup>
+
+</Project>
