@@ -1,10 +1,7 @@
 ﻿using ClaimsTransformation.Language.DOM;
 using ClaimsTransformation.Language.Parser;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ClaimsTransformation.Tests
 {
@@ -30,7 +27,7 @@ namespace ClaimsTransformation.Tests
             {
                 new RuleExpression(
                     Enumerable.Empty<ConditionExpression>(),
-                    new CopyClaimExpression(IssueDuration.Permanent)
+                    new CopyClaimExpression(IssueDuration.Permanent, "C1")
                 )
             };
             var actual = this.Parser.Parse(input);

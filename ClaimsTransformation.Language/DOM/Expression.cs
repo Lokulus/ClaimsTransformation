@@ -2,7 +2,7 @@
 
 namespace ClaimsTransformation.Language.DOM
 {
-    public abstract class Expression : IEquatable<Expression>
+    public abstract class Expression
     {
         public override int GetHashCode()
         {

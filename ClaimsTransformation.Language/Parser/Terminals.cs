@@ -34,6 +34,8 @@
 
         public const string ISSUE = "issue";
 
+        public const string ADD = "add";
+
         public const string TYPE = "type";
 
         public const string VALUE = "value";
