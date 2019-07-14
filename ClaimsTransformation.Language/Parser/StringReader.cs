@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace ClaimsTransformation.Language.Parser
 {
@@ -75,6 +76,15 @@ namespace ClaimsTransformation.Language.Parser
         public void Rollback()
         {
             this.Position = this.Markers.Pop();
+        }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            builder.Append(this.Value.Substring(0, this.Position));
+            builder.Append("{HEAD}");
+            builder.Append(this.Value.Substring(this.Position, this.Value.Length - this.Position));
+            return builder.ToString();
         }
     }
 }
