@@ -35,6 +35,7 @@ namespace ClaimsTransformation.Language.Parser
     {
         None = 0,
         Any = 1,
-        All = 2
+        All = 2,
+        Repeat = 4
     }
 }

@@ -17,6 +17,14 @@ namespace ClaimsTransformation.Language.Parser
 
         public string Value { get; private set; }
 
+        public bool IsEmpty
+        {
+            get
+            {
+                return string.IsNullOrEmpty(this.Value);
+            }
+        }
+
         public TokenFlags Flags { get; private set; }
     }
 

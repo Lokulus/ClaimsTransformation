@@ -2,6 +2,8 @@
 {
     public class Terminals
     {
+        public const string EMPTY = "";
+
         public const string IMPLY = "=>";
 
         public const string SEMICOLON = ";";
@@ -30,6 +32,8 @@
 
         public const string ASSIGN = "=";
 
+        public const string CONCAT = "+";
+
         public const string AND = "&&";
 
         public const string ISSUE = "issue";
@@ -45,6 +49,8 @@
         public const string CLAIM = "claim";
 
         public const string IDENTIFIER = "[_A-Za-z][_A-Za-z0-9]*";
+
+        public const string QUOTE = "\"";
 
         public const string STRING = "\"[^\"\n]*\"";
 

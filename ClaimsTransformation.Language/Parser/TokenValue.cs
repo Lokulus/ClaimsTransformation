@@ -19,13 +19,13 @@ namespace ClaimsTransformation.Language.Parser
         {
             this.Token = token;
             this.Value = value;
-            this.Children = children;
+            this.Children = children.ToArray();
         }
 
         public Token Token { get; private set; }
 
         public string Value { get; private set; }
 
-        public IEnumerable<TokenValue> Children { get; private set; }
+        public TokenValue[] Children { get; private set; }
     }
 }
