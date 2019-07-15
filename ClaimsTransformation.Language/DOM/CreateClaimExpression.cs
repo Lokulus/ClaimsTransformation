@@ -9,10 +9,17 @@ namespace ClaimsTransformation.Language.DOM
     {
         public CreateClaimExpression(IssueDuration duration, IEnumerable<BinaryExpression> expressions) : base(duration)
         {
-            this.Expressions = expressions;
+            if (expressions != null)
+            {
+                this.Expressions = expressions.ToArray();
+            }
+            else
+            {
+                this.Expressions = new BinaryExpression[] { };
+            }
         }
 
-        public IEnumerable<BinaryExpression> Expressions { get; private set; }
+        public BinaryExpression[] Expressions { get; private set; }
 
         public override int GetHashCode()
         {

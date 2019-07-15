@@ -11,12 +11,19 @@ namespace ClaimsTransformation.Language.DOM
         public CallExpression(string name, IEnumerable<Expression> arguments)
         {
             this.Name = name;
-            this.Arguments = arguments;
+            if (arguments != null)
+            {
+                this.Arguments = arguments.ToArray();
+            }
+            else
+            {
+                this.Arguments = new Expression[] { };
+            }
         }
 
         public string Name { get; private set; }
 
-        public IEnumerable<Expression> Arguments { get; private set; }
+        public Expression[] Arguments { get; private set; }
 
         public override int GetHashCode()
         {

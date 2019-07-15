@@ -20,13 +20,20 @@ namespace ClaimsTransformation.Language.Parser
         public Syntax(Token token, IEnumerable<Syntax> children, SyntaxFlags flags)
         {
             this.Token = token;
-            this.Children = children;
+            if (children != null)
+            {
+                this.Children = children.ToArray();
+            }
+            else
+            {
+                this.Children = new Syntax[] { };
+            }
             this.Flags = flags;
         }
 
         public Token Token { get; private set; }
 
-        public IEnumerable<Syntax> Children { get; private set; }
+        public Syntax[] Children { get; private set; }
 
         public SyntaxFlags Flags { get; private set; }
 

@@ -10,15 +10,22 @@ namespace ClaimsTransformation.Language.DOM
     {
         public const string UNDEFINED = "UNDEFINED";
 
-        protected ConditionExpression(string identifier, IEnumerable<BinaryExpression> expressions)
+        public ConditionExpression(string identifier, IEnumerable<BinaryExpression> expressions)
         {
             this.Identifier = identifier;
-            this.Expressions = expressions;
+            if (expressions != null)
+            {
+                this.Expressions = expressions.ToArray();
+            }
+            else
+            {
+                this.Expressions = new BinaryExpression[] { };
+            }
         }
 
         public string Identifier { get; private set; }
 
-        public IEnumerable<BinaryExpression> Expressions { get; private set; }
+        public BinaryExpression[] Expressions { get; private set; }
 
         public override int GetHashCode()
         {

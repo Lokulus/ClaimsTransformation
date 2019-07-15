@@ -5,14 +5,20 @@ namespace ClaimsTransformation.Language.Parser
 {
     public class Token
     {
-        public Token(string value) : this(value, TokenFlags.Literal)
+        public Token(string value) : this(value, TokenChannel.Discard)
         {
 
         }
 
-        public Token(string value, TokenFlags flags)
+        public Token(string value, TokenChannel channel) : this(value, channel, TokenFlags.Literal)
+        {
+
+        }
+
+        public Token(string value, TokenChannel channel, TokenFlags flags)
         {
             this.Value = value;
+            this.Channel = channel;
             this.Flags = flags;
         }
 
@@ -25,6 +31,8 @@ namespace ClaimsTransformation.Language.Parser
                 return string.IsNullOrEmpty(this.Value);
             }
         }
+
+        public TokenChannel Channel { get; private set; }
 
         public TokenFlags Flags { get; private set; }
 
@@ -109,6 +117,13 @@ namespace ClaimsTransformation.Language.Parser
         {
             return !(a == b);
         }
+    }
+
+    public enum TokenChannel
+    {
+        None,
+        Normal,
+        Discard
     }
 
     [Flags]

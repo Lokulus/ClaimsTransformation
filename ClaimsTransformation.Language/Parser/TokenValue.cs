@@ -7,22 +7,32 @@ namespace ClaimsTransformation.Language.Parser
 {
     public class TokenValue
     {
-        public TokenValue(Token token, string value) : this(token, value, Enumerable.Empty<TokenValue>())
+        public TokenValue(Syntax syntax, Token token, string value) : this(syntax, token, value, Enumerable.Empty<TokenValue>())
         {
 
         }
 
-        public TokenValue(IEnumerable<TokenValue> children) : this(null, null, children)
+        public TokenValue(Syntax syntax, IEnumerable<TokenValue> children) : this(syntax, null, null, children)
         {
 
         }
 
-        public TokenValue(Token token, string value, IEnumerable<TokenValue> children)
+        public TokenValue(Syntax syntax, Token token, string value, IEnumerable<TokenValue> children)
         {
+            this.Syntax = syntax;
             this.Token = token;
             this.Value = value;
-            this.Children = children.ToArray();
+            if (children != null)
+            {
+                this.Children = children.ToArray();
+            }
+            else
+            {
+                this.Children = new TokenValue[] { };
+            }
         }
+
+        public Syntax Syntax { get; private set; }
 
         public Token Token { get; private set; }
 
@@ -30,11 +40,22 @@ namespace ClaimsTransformation.Language.Parser
 
         public TokenValue[] Children { get; private set; }
 
+        public void Add(TokenValue value)
+        {
+            this.Children = this.Children.Concat(
+                new[] { value }
+            ).ToArray();
+        }
+
         public override int GetHashCode()
         {
             var hashCode = 0;
             unchecked
             {
+                if (this.Syntax != null)
+                {
+                    hashCode += this.Syntax.GetHashCode();
+                }
                 if (this.Token != null)
                 {
                     hashCode += this.Token.GetHashCode();
@@ -102,6 +123,10 @@ namespace ClaimsTransformation.Language.Parser
             if (object.ReferenceEquals(this, other))
             {
                 return true;
+            }
+            if (!object.Equals(this.Syntax, other.Syntax))
+            {
+                return false;
             }
             if (!object.Equals(this.Token, other.Token))
             {

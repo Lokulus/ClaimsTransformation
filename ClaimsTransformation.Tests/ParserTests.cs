@@ -35,7 +35,7 @@ namespace ClaimsTransformation.Tests
         [Test]
         public void Comparisons()
         {
-            var input = "type == \"http://contoso.com/role\", value == \"Editor\"";
+            var input = "type == \"http://contoso.com/role\", value == \"Editor\", valuetype == \"string\"";
             var reader = new StringReader(input);
             var result = default(TokenValue);
             Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Comparisons, out result));
@@ -97,7 +97,7 @@ namespace ClaimsTransformation.Tests
         [Test]
         public void Assignments()
         {
-            var input = "type = C1.type, value = C1.type + \" \" + C2.type";
+            var input = "type = C1.type, value = C1.type + \" \" + C2.type, valuetype = \"string\"";
             var reader = new StringReader(input);
             var result = default(TokenValue);
             Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Assignments, out result));
@@ -124,7 +124,10 @@ namespace ClaimsTransformation.Tests
             var expected = new[]
             {
                 new RuleExpression(
-                    Enumerable.Empty<ConditionExpression>(),
+                    new[]
+                    {
+                        new ConditionExpression("C1", Enumerable.Empty<BinaryExpression>())
+                    },
                     new CopyClaimExpression(IssueDuration.Permanent, "C1")
                 )
             };
@@ -140,7 +143,7 @@ namespace ClaimsTransformation.Tests
             {
                 "C1:[type == \"http://contoso.com/role\", value == \"Editor\"] && " +
                 "C2:[type == \"http://contoso.com/role\", value == \"Manager\"] " +
-                "=> Issue(type = C1.type, value = C1.type + \" \" + C2.type);"
+                "=> Issue(type = C1.type, value = C1.type + \" \" + C2.type, valuetype = \"string\");"
             };
             var expected = new[]
             {

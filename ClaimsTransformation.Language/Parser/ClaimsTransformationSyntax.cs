@@ -8,13 +8,13 @@
                 new[]
                 {
                     new Syntax(
-                        new Token(Terminals.TYPE)
+                        new Token(Terminals.TYPE, TokenChannel.Normal)
                     ),
                     new Syntax(
-                        new Token(Terminals.VALUE)
+                        new Token(Terminals.VALUE_TYPE, TokenChannel.Normal)
                     ),
                     new Syntax(
-                        new Token(Terminals.VALUE_TYPE)
+                        new Token(Terminals.VALUE, TokenChannel.Normal)
                     )
                 },
                 SyntaxFlags.Any
@@ -24,23 +24,23 @@
                 new[]
                 {
                     new Syntax(
-                        new Token(Terminals.EQ)
+                        new Token(Terminals.EQ, TokenChannel.Normal)
                     ),
                     new Syntax(
-                        new Token(Terminals.NEQ)
+                        new Token(Terminals.NEQ, TokenChannel.Normal)
                     ),
                     new Syntax(
-                        new Token(Terminals.REGEXP_MATCH)
+                        new Token(Terminals.REGEXP_MATCH, TokenChannel.Normal)
                     ),
                     new Syntax(
-                        new Token(Terminals.REGEXP_NOT_MATCH)
+                        new Token(Terminals.REGEXP_NOT_MATCH, TokenChannel.Normal)
                     )
                 },
                 SyntaxFlags.Any
             );
 
             Value = new Syntax(
-                new Token(Terminals.STRING, TokenFlags.String)
+                new Token(Terminals.STRING, TokenChannel.Normal, TokenFlags.String)
             );
 
             ValueOrProperty = new Syntax(
@@ -51,7 +51,7 @@
                         new[]
                         {
                             new Syntax(
-                                new Token(Terminals.IDENTIFIER, TokenFlags.Identifier)
+                                new Token(Terminals.IDENTIFIER, TokenChannel.Normal, TokenFlags.Identifier)
                             ),
                             new Syntax(
                                 new Token(Terminals.DOT)
@@ -68,7 +68,7 @@
                 new[]
                 {
                     new Syntax(
-                        new Token(Terminals.CONCAT)
+                        new Token(Terminals.CONCAT, TokenChannel.Normal)
                     )
                 },
                 SyntaxFlags.Any
@@ -142,7 +142,7 @@
                                 new[]
                                 {
                                     new Syntax(
-                                        new Token(Terminals.IDENTIFIER, TokenFlags.Identifier)
+                                        new Token(Terminals.IDENTIFIER, TokenChannel.Normal, TokenFlags.Identifier)
                                     ),
                                     new Syntax(
                                         new Token(Terminals.COLON)
@@ -176,6 +176,16 @@
                 SyntaxFlags.All
             );
 
+            ConditionOperator = new Syntax(
+                new[]
+                {
+                    new Syntax(
+                        new Token(Terminals.AND, TokenChannel.Normal)
+                    )
+                },
+                SyntaxFlags.Any
+            );
+
             Conditions = new Syntax(
                 new[]
                 {
@@ -186,9 +196,7 @@
                             new Syntax(
                                 new[]
                                 {
-                                    new Syntax(
-                                        new Token(Terminals.AND)
-                                    ),
+                                    ConditionOperator,
                                     Condition
                                 },
                                 SyntaxFlags.All | SyntaxFlags.Repeat
@@ -211,7 +219,7 @@
                         new Token(Terminals.ASSIGN)
                     ),
                     new Syntax(
-                        new Token(Terminals.IDENTIFIER, TokenFlags.Identifier)
+                        new Token(Terminals.IDENTIFIER, TokenChannel.Normal, TokenFlags.Identifier)
                     ),
                 },
                 SyntaxFlags.All
@@ -222,7 +230,7 @@
                 {
                     Property,
                     new Syntax(
-                        new Token(Terminals.ASSIGN)
+                        new Token(Terminals.ASSIGN, TokenChannel.Normal)
                     ),
                     Expression
                 },
@@ -262,12 +270,23 @@
                 SyntaxFlags.All
             );
 
-            Issue = new Syntax(
+            Issuance = new Syntax(
                 new[]
                 {
                     new Syntax(
-                        new Token(Terminals.ISSUE)
+                        new Token(Terminals.ISSUE, TokenChannel.Normal)
                     ),
+                    new Syntax(
+                        new Token(Terminals.ADD, TokenChannel.Normal)
+                    )
+                },
+                SyntaxFlags.Any
+            );
+
+            Issue = new Syntax(
+                new[]
+                {
+                    Issuance,
                     new Syntax(
                         new Token(Terminals.O_BRACKET)
                     ),
@@ -320,6 +339,8 @@
 
         public static Syntax Condition { get; private set; }
 
+        public static Syntax ConditionOperator { get; private set; }
+
         public static Syntax Conditions { get; private set; }
 
         public static Syntax Assignment { get; private set; }
@@ -329,6 +350,8 @@
         public static Syntax Copy { get; private set; }
 
         public static Syntax Create { get; private set; }
+
+        public static Syntax Issuance { get; private set; }
 
         public static Syntax Issue { get; private set; }
 

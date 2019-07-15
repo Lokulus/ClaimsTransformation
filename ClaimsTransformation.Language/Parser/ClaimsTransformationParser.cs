@@ -37,7 +37,7 @@ namespace ClaimsTransformation.Language.Parser
             {
                 throw new NotImplementedException();
             }
-            return ExpressionFactory.Rule(result);
+            return ExpressionFactory.Rule(result.ForChannel(TokenChannel.Normal));
         }
     }
 }

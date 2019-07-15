@@ -9,11 +9,18 @@ namespace ClaimsTransformation.Language.DOM
     {
         public RuleExpression(IEnumerable<ConditionExpression> conditions, IssueExpression issue)
         {
-            this.Conditions = conditions;
+            if (conditions != null)
+            {
+                this.Conditions = conditions.ToArray();
+            }
+            else
+            {
+                this.Conditions = new ConditionExpression[] { };
+            }
             this.Issue = issue;
         }
 
-        public IEnumerable<ConditionExpression> Conditions { get; private set; }
+        public ConditionExpression[] Conditions { get; private set; }
 
         public IssueExpression Issue { get; private set; }
 

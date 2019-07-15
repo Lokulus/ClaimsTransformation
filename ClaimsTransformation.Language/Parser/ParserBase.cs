@@ -22,17 +22,17 @@ namespace ClaimsTransformation.Language.Parser
         {
             if (syntax.Token != null)
             {
-                return this.TryParse(reader, syntax.Token, out result);
+                return this.TryParse(reader, syntax, syntax.Token, out result);
             }
             else if (syntax.Children != null)
             {
                 if (syntax.Flags.HasFlag(SyntaxFlags.Any))
                 {
-                    return this.TryParseAny(reader, syntax.Children, out result);
+                    return this.TryParseAny(reader, syntax, syntax.Children, out result);
                 }
                 if (syntax.Flags.HasFlag(SyntaxFlags.All))
                 {
-                    return this.TryParseAll(reader, syntax.Children, out result);
+                    return this.TryParseAll(reader, syntax, syntax.Children, out result);
                 }
             }
             throw new NotImplementedException();
@@ -54,16 +54,16 @@ namespace ClaimsTransformation.Language.Parser
                     result = values[0];
                     return true;
                 default:
-                    result = new TokenValue(values);
+                    result = new TokenValue(syntax, values);
                     return true;
             }
         }
 
-        protected virtual bool TryParseAny(StringReader reader, IEnumerable<Syntax> children, out TokenValue result)
+        protected virtual bool TryParseAny(StringReader reader, Syntax syntax, IEnumerable<Syntax> children, out TokenValue result)
         {
-            foreach (var syntax in children)
+            foreach (var child in children)
             {
-                if (this.TryParse(reader, syntax, out result))
+                if (this.TryParse(reader, child, out result))
                 {
                     return true;
                 }
@@ -72,14 +72,14 @@ namespace ClaimsTransformation.Language.Parser
             return false;
         }
 
-        protected virtual bool TryParseAll(StringReader reader, IEnumerable<Syntax> children, out TokenValue result)
+        protected virtual bool TryParseAll(StringReader reader, Syntax syntax, IEnumerable<Syntax> children, out TokenValue result)
         {
             reader.Begin();
             reader.Align();
             var values = new List<TokenValue>();
-            foreach (var syntax in children)
+            foreach (var child in children)
             {
-                if (this.TryParse(reader, syntax, out result))
+                if (this.TryParse(reader, child, out result))
                 {
                     values.Add(result);
                 }
@@ -91,41 +91,41 @@ namespace ClaimsTransformation.Language.Parser
                 }
             }
             reader.Complete();
-            result = new TokenValue(values);
+            result = new TokenValue(syntax, values);
             return true;
         }
 
-        protected virtual bool TryParse(StringReader reader, Token token, out TokenValue result)
+        protected virtual bool TryParse(StringReader reader, Syntax syntax, Token token, out TokenValue result)
         {
             if (token.IsEmpty)
             {
-                result = new TokenValue(token, string.Empty);
+                result = new TokenValue(syntax, token, string.Empty);
                 return true;
             }
             if (token.Flags.HasFlag(TokenFlags.Literal))
             {
-                return this.TryParseLiteral(reader, token, out result);
+                return this.TryParseLiteral(reader, syntax, token, out result);
             }
             if (token.Flags.HasFlag(TokenFlags.Identifier))
             {
-                return this.TryParseIdentifier(reader, token, out result);
+                return this.TryParseIdentifier(reader, syntax, token, out result);
             }
             if (token.Flags.HasFlag(TokenFlags.Boolean))
             {
-                return this.TryParseBoolean(reader, token, out result);
+                return this.TryParseBoolean(reader, syntax, token, out result);
             }
             if (token.Flags.HasFlag(TokenFlags.Number))
             {
-                return this.TryParseNumber(reader, token, out result);
+                return this.TryParseNumber(reader, syntax, token, out result);
             }
             if (token.Flags.HasFlag(TokenFlags.String))
             {
-                return this.TryParseString(reader, token, out result);
+                return this.TryParseString(reader, syntax, token, out result);
             }
             throw new NotImplementedException();
         }
 
-        protected virtual bool TryParseLiteral(StringReader reader, Token token, out TokenValue result)
+        protected virtual bool TryParseLiteral(StringReader reader, Syntax syntax, Token token, out TokenValue result)
         {
             reader.Begin();
             reader.Align();
@@ -136,7 +136,7 @@ namespace ClaimsTransformation.Language.Parser
                 if (string.Equals(builder.ToString(), token.Value, StringComparison.OrdinalIgnoreCase))
                 {
                     reader.Complete();
-                    result = new TokenValue(token, token.Value);
+                    result = new TokenValue(syntax, token, token.Value);
                     return true;
                 }
             }
@@ -145,7 +145,7 @@ namespace ClaimsTransformation.Language.Parser
             return false;
         }
 
-        protected virtual bool TryParseIdentifier(StringReader reader, Token token, out TokenValue result)
+        protected virtual bool TryParseIdentifier(StringReader reader, Syntax syntax, Token token, out TokenValue result)
         {
             reader.Begin();
             reader.Align();
@@ -166,7 +166,7 @@ namespace ClaimsTransformation.Language.Parser
                     builder.Append(reader.Read());
                 }
                 reader.Complete();
-                result = new TokenValue(token, builder.ToString());
+                result = new TokenValue(syntax, token, builder.ToString());
                 return true;
             }
             reader.Rollback();
@@ -174,17 +174,17 @@ namespace ClaimsTransformation.Language.Parser
             return false;
         }
 
-        protected virtual bool TryParseBoolean(StringReader reader, Token token, out TokenValue result)
+        protected virtual bool TryParseBoolean(StringReader reader, Syntax syntax, Token token, out TokenValue result)
         {
             throw new NotImplementedException();
         }
 
-        protected virtual bool TryParseNumber(StringReader reader, Token token, out TokenValue result)
+        protected virtual bool TryParseNumber(StringReader reader, Syntax syntax, Token token, out TokenValue result)
         {
             throw new NotImplementedException();
         }
 
-        protected virtual bool TryParseString(StringReader reader, Token token, out TokenValue result)
+        protected virtual bool TryParseString(StringReader reader, Syntax syntax, Token token, out TokenValue result)
         {
             reader.Begin();
             reader.Align();
@@ -197,7 +197,7 @@ namespace ClaimsTransformation.Language.Parser
                     if (character == '"')
                     {
                         reader.Complete();
-                        result = new TokenValue(token, builder.ToString());
+                        result = new TokenValue(syntax, token, builder.ToString());
                         return true;
                     }
                     builder.Append(character);
