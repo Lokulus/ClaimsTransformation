@@ -16,17 +16,44 @@ namespace ClaimsTransformation.Tests
             this.Parser = new ClaimsTransformationParser();
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+
+        }
+
         [Test]
-        public void Test001()
+        public void Comparison()
+        {
+            var input = "type == \"http://contoso.com/role\"";
+            var reader = new StringReader(input);
+            var result = default(TokenValue);
+            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Comparison, out result));
+            Assert.IsTrue(reader.EOF);
+        }
+
+        [Test]
+        public void Comparisons()
+        {
+            var input = "type == \"http://contoso.com/role\", value == \"Editor\"";
+            var reader = new StringReader(input);
+            var result = default(TokenValue);
+            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Comparisons, out result));
+            Assert.IsTrue(reader.EOF);
+        }
+
+        [Test]
+        public void Condition()
         {
             var input = "C1:[type == \"http://contoso.com/role\", value == \"Editor\"]";
             var reader = new StringReader(input);
             var result = default(TokenValue);
             Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Condition, out result));
+            Assert.IsTrue(reader.EOF);
         }
 
         [Test]
-        public void Test002()
+        public void Conditions()
         {
             var input =
                 "C1:[type == \"http://contoso.com/role\", value == \"Editor\"] && " +
@@ -34,55 +61,61 @@ namespace ClaimsTransformation.Tests
             var reader = new StringReader(input);
             var result = default(TokenValue);
             Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Conditions, out result));
+            Assert.IsTrue(reader.EOF);
         }
 
         [Test]
-        public void Test003()
+        public void Issue_Copy()
         {
-            var input ="Issue(claim = C1)";
+            var input = "Issue(claim = C1)";
             var reader = new StringReader(input);
             var result = default(TokenValue);
             Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Issue, out result));
+            Assert.IsTrue(reader.EOF);
         }
 
         [Test]
-        public void Test004()
+        public void Expression()
         {
-            var input = "C1.type + \" \" + C2.type";
+            var input = "C1.type + \" \" + C2.type + \" \" + C3.type";
             var reader = new StringReader(input);
             var result = default(TokenValue);
             Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Expression, out result));
+            Assert.IsTrue(reader.EOF);
         }
 
         [Test]
-        public void Test005()
+        public void Assignment()
         {
             var input = "value = C1.type + \" \" + C2.type";
             var reader = new StringReader(input);
             var result = default(TokenValue);
             Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Assignment, out result));
+            Assert.IsTrue(reader.EOF);
         }
 
         [Test]
-        public void Test006()
+        public void Assignments()
         {
             var input = "type = C1.type, value = C1.type + \" \" + C2.type";
             var reader = new StringReader(input);
             var result = default(TokenValue);
             Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Assignments, out result));
+            Assert.IsTrue(reader.EOF);
         }
 
         [Test]
-        public void Test007()
+        public void Issue_New()
         {
             var input = "Issue(type = C1.type, value = C1.type + \" \" + C2.type)";
             var reader = new StringReader(input);
             var result = default(TokenValue);
             Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Issue, out result));
+            Assert.IsTrue(reader.EOF);
         }
 
         [Test]
-        public void Test101()
+        public void Test001()
         {
             var input = new[]
             {
@@ -101,7 +134,7 @@ namespace ClaimsTransformation.Tests
 
 
         [Test]
-        public void Test102()
+        public void Test002()
         {
             var input = new[]
             {

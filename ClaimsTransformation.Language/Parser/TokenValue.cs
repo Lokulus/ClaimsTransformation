@@ -60,16 +60,19 @@ namespace ClaimsTransformation.Language.Parser
             if (this.Token != null)
             {
                 builder.Append(this.Token.ToString());
-                builder.Append(" (");
-                if (!string.IsNullOrEmpty(this.Value))
+                if (!string.Equals(this.Token.Value, this.Value, StringComparison.OrdinalIgnoreCase))
                 {
-                    builder.Append(this.Value);
+                    builder.Append(" (");
+                    if (!string.IsNullOrEmpty(this.Value))
+                    {
+                        builder.Append(this.Value);
+                    }
+                    else
+                    {
+                        builder.Append("{EMPTY}");
+                    }
+                    builder.Append(")");
                 }
-                else
-                {
-                    builder.Append("{EMPTY}");
-                }
-                builder.Append(")");
             }
             else if (this.Children != null)
             {

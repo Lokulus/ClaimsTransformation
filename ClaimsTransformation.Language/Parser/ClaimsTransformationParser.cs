@@ -32,6 +32,11 @@ namespace ClaimsTransformation.Language.Parser
             {
                 throw new NotImplementedException();
             }
+            reader.Align();
+            if (!reader.EOF)
+            {
+                throw new NotImplementedException();
+            }
             return ExpressionFactory.Rule(result);
         }
     }

@@ -77,19 +77,24 @@
             Expression = new Syntax(
                 new[]
                 {
-                    ValueOrProperty,
                     new Syntax(
                         new[]
                         {
-                            ExpressionOperator,
+                            ValueOrProperty,
                             new Syntax(
-                                new Token(Terminals.EMPTY)
+                                new[]
+                                {
+                                    ExpressionOperator,
+                                    ValueOrProperty
+                                },
+                                SyntaxFlags.All | SyntaxFlags.Repeat
                             )
                         },
-                        SyntaxFlags.Any
-                    )
+                        SyntaxFlags.All
+                    ),
+                    ValueOrProperty
                 },
-                SyntaxFlags.All | SyntaxFlags.Repeat
+                SyntaxFlags.Any
             );
 
             Comparison = new Syntax(
@@ -105,21 +110,26 @@
             Comparisons = new Syntax(
                 new[]
                 {
-                    Comparison,
                     new Syntax(
                         new[]
                         {
+                            Comparison,
                             new Syntax(
-                                new Token(Terminals.COMMA)
-                            ),
-                            new Syntax(
-                                new Token(Terminals.EMPTY)
+                                new[]
+                                {
+                                    new Syntax(
+                                        new Token(Terminals.COMMA)
+                                    ),
+                                    Comparison
+                                },
+                                SyntaxFlags.All | SyntaxFlags.Repeat
                             )
                         },
-                        SyntaxFlags.Any
-                    )
+                        SyntaxFlags.All
+                    ),
+                    Comparison
                 },
-                SyntaxFlags.All | SyntaxFlags.Repeat
+                SyntaxFlags.Any
             );
 
             Condition = new Syntax(
@@ -169,21 +179,26 @@
             Conditions = new Syntax(
                 new[]
                 {
-                    Condition,
                     new Syntax(
                         new[]
                         {
+                            Condition,
                             new Syntax(
-                                new Token(Terminals.AND)
-                            ),
-                            new Syntax(
-                                new Token(Terminals.EMPTY)
+                                new[]
+                                {
+                                    new Syntax(
+                                        new Token(Terminals.AND)
+                                    ),
+                                    Condition
+                                },
+                                SyntaxFlags.All | SyntaxFlags.Repeat
                             )
                         },
-                        SyntaxFlags.Any
-                    )
+                        SyntaxFlags.All
+                    ),
+                    Condition,
                 },
-                SyntaxFlags.All | SyntaxFlags.Repeat
+                SyntaxFlags.Any
             );
 
             Copy = new Syntax(
@@ -217,21 +232,26 @@
             Assignments = new Syntax(
                 new[]
                 {
-                    Assignment,
                     new Syntax(
                         new[]
                         {
+                            Assignment,
                             new Syntax(
-                                new Token(Terminals.COMMA)
-                            ),
-                            new Syntax(
-                                new Token(Terminals.EMPTY)
+                                new[]
+                                {
+                                    new Syntax(
+                                        new Token(Terminals.COMMA)
+                                    ),
+                                    Assignment
+                                },
+                                SyntaxFlags.All | SyntaxFlags.Repeat
                             )
                         },
-                        SyntaxFlags.Any
-                    )
+                        SyntaxFlags.All
+                    ),
+                    Assignment,
                 },
-                SyntaxFlags.All | SyntaxFlags.Repeat
+                SyntaxFlags.Any
             );
 
             Create = new Syntax(
