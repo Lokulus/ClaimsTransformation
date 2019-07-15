@@ -48,8 +48,17 @@ namespace ClaimsTransformation.Language.DOM
             builder.Append(Terminals.O_BRACKET);
             if (this.Arguments != null)
             {
+                var first = true;
                 foreach (var argument in this.Arguments)
                 {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        builder.Append(Terminals.COMMA);
+                    }
                     builder.Append(argument.ToString());
                 }
             }
