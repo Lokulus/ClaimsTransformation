@@ -27,13 +27,41 @@ namespace ClaimsTransformation.Language.Parser
         public static BinaryExpression Binary(TokenValue value)
         {
             var args = Expressions(value.Children);
-            if (args.Length != 3)
+            return Binary(args);
+        }
+
+        private static BinaryExpression Binary(Expression[] expressions)
+        {
+            var queue = new Queue<Expression>(expressions);
+            var left = default(Expression);
+            var @operator = default(LiteralExpression);
+            var right = default(Expression);
+            while (queue.Count > 0)
             {
-                throw new NotImplementedException();
+                if (left == null)
+                {
+                    left = queue.Dequeue();
+                }
+                else if (@operator == null)
+                {
+                    @operator = queue.Dequeue() as LiteralExpression;
+                }
+                else if (right == null)
+                {
+                    right = queue.Dequeue();
+                }
+                else
+                {
+                    if (queue.Count > 1)
+                    {
+                        right = Binary(new[] { right, queue.Dequeue(), queue.Dequeue() });
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
             }
-            var left = args[0];
-            var @operator = args[1] as LiteralExpression;
-            var right = args[2];
             return new BinaryExpression(left, @operator, right);
         }
 

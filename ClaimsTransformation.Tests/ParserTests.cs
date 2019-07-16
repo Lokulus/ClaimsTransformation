@@ -160,7 +160,81 @@ namespace ClaimsTransformation.Tests
             };
             var expected = new[]
             {
-               default(RuleExpression)
+                new RuleExpression(
+                    new[]
+                    {
+                        new ConditionExpression(
+                            new LiteralExpression("C1"),
+                            new[]
+                            {
+                                new BinaryExpression(
+                                    new LiteralExpression("type"),
+                                    new LiteralExpression("=="),
+                                    new LiteralExpression("http://contoso.com/role")
+                                ),
+                                new BinaryExpression(
+                                    new LiteralExpression("value"),
+                                    new LiteralExpression("=="),
+                                    new LiteralExpression("Editor")
+                                )
+                            }
+                        ),
+                        new ConditionExpression(
+                            new LiteralExpression("C2"),
+                            new[]
+                            {
+                                new BinaryExpression(
+                                    new LiteralExpression("type"),
+                                    new LiteralExpression("=="),
+                                    new LiteralExpression("http://contoso.com/role")
+                                ),
+                                new BinaryExpression(
+                                    new LiteralExpression("value"),
+                                    new LiteralExpression("=="),
+                                    new LiteralExpression("Manager")
+                                )
+                            }
+                        )
+                    },
+                    new IssueExpression(
+                        new LiteralExpression("Issue"),
+                        new[]
+                        {
+                            new BinaryExpression(
+                                new LiteralExpression("type"),
+                                new LiteralExpression("="),
+                                new PropertyExpression(
+                                    new LiteralExpression("C1"),
+                                    new LiteralExpression("type")
+                                )
+                            ),
+                            new BinaryExpression(
+                                new LiteralExpression("value"),
+                                new LiteralExpression("="),
+                                new BinaryExpression(
+                                    new BinaryExpression(
+                                        new PropertyExpression(
+                                            new LiteralExpression("C1"),
+                                            new LiteralExpression("type")
+                                        ),
+                                        new LiteralExpression("+"),
+                                        new LiteralExpression(" ")
+                                    ),
+                                    new LiteralExpression("+"),
+                                    new PropertyExpression(
+                                        new LiteralExpression("C2"),
+                                        new LiteralExpression("type")
+                                    )
+                                )
+                            ),
+                            new BinaryExpression(
+                                new LiteralExpression("valuetype"),
+                                new LiteralExpression("="),
+                                new LiteralExpression("string")
+                            )
+                        }
+                    )
+                )
             };
             var actual = this.Parser.Parse(input);
             Assert.AreEqual(expected, actual);

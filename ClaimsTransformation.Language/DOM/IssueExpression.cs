@@ -58,8 +58,17 @@ namespace ClaimsTransformation.Language.DOM
             builder.Append(Terminals.O_BRACKET);
             if (this.Expressions != null)
             {
+                var first = true;
                 foreach (var expression in this.Expressions)
                 {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        builder.Append(Terminals.COMMA);
+                    }
                     builder.Append(expression.ToString());
                 }
             }
