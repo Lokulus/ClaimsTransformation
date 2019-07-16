@@ -1,5 +1,4 @@
 ﻿using ClaimsTransformation.Language.Parser;
-using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,19 +6,19 @@ namespace ClaimsTransformation.Language.DOM
 {
     public class AggregateConditionExpression : ConditionExpression
     {
-        protected AggregateConditionExpression(string identifier, string name, IEnumerable<BinaryExpression> expressions) : base(identifier, expressions)
+        protected AggregateConditionExpression(LiteralExpression identifier, LiteralExpression name, IEnumerable<BinaryExpression> expressions) : base(identifier, expressions)
         {
             this.Name = name;
         }
 
-        public string Name { get; private set; }
+        public LiteralExpression Name { get; private set; }
 
         public override int GetHashCode()
         {
             var hashCode = base.GetHashCode();
             unchecked
             {
-                if (!string.IsNullOrEmpty(this.Name))
+                if (this.Name != null)
                 {
                     hashCode += this.Name.GetHashCode();
                 }
@@ -30,9 +29,9 @@ namespace ClaimsTransformation.Language.DOM
         public override string ToString()
         {
             var builder = new StringBuilder();
-            if (!string.IsNullOrEmpty(this.Name))
+            if (this.Name != null)
             {
-                builder.Append(this.Name);
+                builder.Append(this.Name.ToString());
             }
             builder.Append(Terminals.O_BRACKET);
             builder.Append(base.ToString());
@@ -51,7 +50,7 @@ namespace ClaimsTransformation.Language.DOM
             {
                 return false;
             }
-            if (!string.Equals(this.Name, other.Name, StringComparison.OrdinalIgnoreCase))
+            if (!object.Equals(this.Name, other.Name))
             {
                 return false;
             }

@@ -1,5 +1,4 @@
 ﻿using ClaimsTransformation.Language.Parser;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +7,7 @@ namespace ClaimsTransformation.Language.DOM
 {
     public class ConditionExpression : Expression
     {
-        public const string UNDEFINED = "UNDEFINED";
-
-        public ConditionExpression(string identifier, IEnumerable<BinaryExpression> expressions)
+        public ConditionExpression(LiteralExpression identifier, IEnumerable<BinaryExpression> expressions)
         {
             this.Identifier = identifier;
             if (expressions != null)
@@ -23,7 +20,7 @@ namespace ClaimsTransformation.Language.DOM
             }
         }
 
-        public string Identifier { get; private set; }
+        public LiteralExpression Identifier { get; private set; }
 
         public BinaryExpression[] Expressions { get; private set; }
 
@@ -32,7 +29,7 @@ namespace ClaimsTransformation.Language.DOM
             var hashCode = 0;
             unchecked
             {
-                if (!string.IsNullOrEmpty(this.Identifier))
+                if (this.Identifier != null)
                 {
                     hashCode += this.Identifier.GetHashCode();
                 }
@@ -50,13 +47,13 @@ namespace ClaimsTransformation.Language.DOM
         public override string ToString()
         {
             var builder = new StringBuilder();
-            if (!string.IsNullOrEmpty(this.Identifier))
+            if (this.Identifier != null)
             {
-                builder.Append(this.Identifier);
+                builder.Append(this.Identifier.ToString());
             }
             else
             {
-                builder.Append(UNDEFINED);
+                builder.Append("{EMPTY}");
             }
             builder.Append(Terminals.COLON);
             builder.Append(Terminals.O_SQ_BRACKET);
@@ -95,7 +92,7 @@ namespace ClaimsTransformation.Language.DOM
             {
                 return true;
             }
-            if (!string.Equals(this.Identifier, other.Identifier, StringComparison.OrdinalIgnoreCase))
+            if (!object.Equals(this.Identifier, other.Identifier))
             {
                 return false;
             }

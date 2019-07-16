@@ -4,7 +4,7 @@ namespace ClaimsTransformation.Language.DOM
 {
     public class BinaryExpression : Expression
     {
-        public BinaryExpression(Expression left, OperatorExpression @operator, Expression right)
+        public BinaryExpression(Expression left, LiteralExpression @operator, Expression right)
         {
             this.Left = left;
             this.Operator = @operator;
@@ -13,7 +13,7 @@ namespace ClaimsTransformation.Language.DOM
 
         public Expression Left { get; private set; }
 
-        public OperatorExpression Operator { get; private set; }
+        public LiteralExpression Operator { get; private set; }
 
         public Expression Right { get; private set; }
 

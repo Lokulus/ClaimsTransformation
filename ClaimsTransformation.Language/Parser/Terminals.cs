@@ -54,6 +54,10 @@
 
         public const string STRING = "\"[^\"\n]*\"";
 
+        public const string NUMBER = "d+";
+
+        public const string BOOLEAN = "(true|false)";
+
         public const string UINT64_TYPE = "uint64";
 
         public const string INT64_TYPE = "int64";

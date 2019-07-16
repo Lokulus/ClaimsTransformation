@@ -31,5 +31,26 @@ namespace ClaimsTransformation.Language.Parser
             }
             throw new NotImplementedException();
         }
+
+        public static IEnumerable<TokenValue> Find(this TokenValue value, params Syntax[] syntax)
+        {
+            return value.Find(syntax.AsEnumerable());
+        }
+
+        public static IEnumerable<TokenValue> Find(this TokenValue value, IEnumerable<Syntax> syntax)
+        {
+            if (syntax.Contains(value.Syntax))
+            {
+                return new[] { value };
+            }
+            else if (value.Children != null)
+            {
+                return value.Children
+                    .SelectMany(child => child.Find(syntax))
+                    .Where(child => child != null)
+                    .ToArray();
+            }
+            return Enumerable.Empty<TokenValue>();
+        }
     }
 }

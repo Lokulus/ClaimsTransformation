@@ -1,23 +1,45 @@
 ﻿using ClaimsTransformation.Language.Parser;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ClaimsTransformation.Language.DOM
 {
-    public abstract class IssueExpression : Expression
+    public class IssueExpression : Expression
     {
-        public IssueExpression(IssueDuration duration)
+        public IssueExpression(LiteralExpression issuance, IEnumerable<BinaryExpression> expressions)
         {
-            this.Duration = duration;
+            this.Issuance = issuance;
+            if (expressions != null)
+            {
+                this.Expressions = expressions.ToArray();
+            }
+            else
+            {
+                this.Expressions = new BinaryExpression[] { };
+            }
         }
 
-        public IssueDuration Duration { get; private set; }
+        public LiteralExpression Issuance { get; private set; }
+
+        public BinaryExpression[] Expressions { get; private set; }
 
         public override int GetHashCode()
         {
             var hashCode = 0;
             unchecked
             {
-                hashCode += this.Duration.GetHashCode();
+                if (this.Issuance != null)
+                {
+                    hashCode += this.Issuance.GetHashCode();
+                }
+                if (this.Expressions != null)
+                {
+                    foreach (var expression in this.Expressions)
+                    {
+                        hashCode += expression.GetHashCode();
+                    }
+                }
             }
             return hashCode;
         }
@@ -25,15 +47,23 @@ namespace ClaimsTransformation.Language.DOM
         public override string ToString()
         {
             var builder = new StringBuilder();
-            switch (this.Duration)
+            if (this.Issuance != null)
             {
-                case IssueDuration.Temporary:
-                    builder.Append(Terminals.ADD);
-                    break;
-                case IssueDuration.Permanent:
-                    builder.Append(Terminals.ISSUE);
-                    break;
+                builder.Append(this.Issuance.ToString());
             }
+            else
+            {
+                builder.Append("{EMPTY}");
+            }
+            builder.Append(Terminals.O_BRACKET);
+            if (this.Expressions != null)
+            {
+                foreach (var expression in this.Expressions)
+                {
+                    builder.Append(expression.ToString());
+                }
+            }
+            builder.Append(Terminals.C_BRACKET);
             return builder.ToString();
         }
 
@@ -52,18 +82,15 @@ namespace ClaimsTransformation.Language.DOM
             {
                 return true;
             }
-            if (this.Duration != other.Duration)
+            if (!object.Equals(this.Issuance, other.Issuance))
+            {
+                return false;
+            }
+            if (!Enumerable.SequenceEqual(this.Expressions, other.Expressions))
             {
                 return false;
             }
             return true;
         }
-    }
-
-    public enum IssueDuration
-    {
-        None,
-        Temporary,
-        Permanent
     }
 }

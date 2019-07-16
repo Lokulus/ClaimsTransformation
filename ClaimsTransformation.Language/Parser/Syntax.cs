@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClaimsTransformation.Language.DOM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,10 @@ namespace ClaimsTransformation.Language.Parser
             {
                 this.Children = new Syntax[] { };
             }
+            if (this.Token != null)
+            {
+                this.Factory = ExpressionFactory.Literal;
+            }
             this.Flags = flags;
         }
 
@@ -35,7 +40,15 @@ namespace ClaimsTransformation.Language.Parser
 
         public Syntax[] Children { get; private set; }
 
+        public Func<TokenValue, Expression> Factory { get; private set; }
+
         public SyntaxFlags Flags { get; private set; }
+
+        public Syntax WithFactory(Func<TokenValue, Expression> factory)
+        {
+            this.Factory = factory;
+            return this;
+        }
 
         public override int GetHashCode()
         {

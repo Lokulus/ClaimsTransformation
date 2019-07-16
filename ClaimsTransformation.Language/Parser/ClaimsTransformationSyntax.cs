@@ -8,6 +8,9 @@
                 new[]
                 {
                     new Syntax(
+                        new Token(Terminals.CLAIM, TokenChannel.Normal)
+                    ),
+                    new Syntax(
                         new Token(Terminals.TYPE, TokenChannel.Normal)
                     ),
                     new Syntax(
@@ -20,7 +23,7 @@
                 SyntaxFlags.Any
             );
 
-            BooleanOperator = new Syntax(
+            BinaryOperator = new Syntax(
                 new[]
                 {
                     new Syntax(
@@ -34,42 +37,61 @@
                     ),
                     new Syntax(
                         new Token(Terminals.REGEXP_NOT_MATCH, TokenChannel.Normal)
+                    ),
+                     new Syntax(
+                        new Token(Terminals.CONCAT, TokenChannel.Normal)
+                    ),
+                    new Syntax(
+                        new Token(Terminals.ASSIGN, TokenChannel.Normal)
                     )
                 },
                 SyntaxFlags.Any
             );
 
-            Value = new Syntax(
+            String = new Syntax(
                 new Token(Terminals.STRING, TokenChannel.Normal, TokenFlags.String)
             );
 
-            ValueOrProperty = new Syntax(
+            Number = new Syntax(
+                new Token(Terminals.NUMBER, TokenChannel.Normal, TokenFlags.Number)
+            );
+
+            Boolean = new Syntax(
+                new Token(Terminals.BOOLEAN, TokenChannel.Normal, TokenFlags.Boolean)
+            );
+
+            Identifier = new Syntax(
+                new Token(Terminals.IDENTIFIER, TokenChannel.Normal, TokenFlags.Identifier)
+            );
+
+            IdentifierProperty = new Syntax(
                 new[]
                 {
-                    Value,
+                    String,
                     new Syntax(
                         new[]
                         {
-                            new Syntax(
-                                new Token(Terminals.IDENTIFIER, TokenChannel.Normal, TokenFlags.Identifier)
-                            ),
+                            Identifier,
                             new Syntax(
                                 new Token(Terminals.DOT)
                             ),
                             Property
                         },
                         SyntaxFlags.All
-                    )
+                    ).WithFactory(ExpressionFactory.Property)
                 },
                 SyntaxFlags.Any
             );
 
-            ExpressionOperator = new Syntax(
+            Value = new Syntax(
                 new[]
                 {
-                    new Syntax(
-                        new Token(Terminals.CONCAT, TokenChannel.Normal)
-                    )
+                    Property,
+                    IdentifierProperty,
+                    String,
+                    Number,
+                    Boolean,
+                    Identifier,
                 },
                 SyntaxFlags.Any
             );
@@ -80,54 +102,44 @@
                     new Syntax(
                         new[]
                         {
-                            ValueOrProperty,
+                            Value,
                             new Syntax(
                                 new[]
                                 {
-                                    ExpressionOperator,
-                                    ValueOrProperty
+                                    BinaryOperator,
+                                    Value
                                 },
                                 SyntaxFlags.All | SyntaxFlags.Repeat
                             )
                         },
                         SyntaxFlags.All
-                    ),
-                    ValueOrProperty
+                    ).WithFactory(ExpressionFactory.Binary),
+                    Value
                 },
                 SyntaxFlags.Any
             );
 
-            Comparison = new Syntax(
-                new[]
-                {
-                    Property,
-                    BooleanOperator,
-                    Value
-                },
-                SyntaxFlags.All
-            );
-
-            Comparisons = new Syntax(
+            Expressions = new Syntax(
                 new[]
                 {
                     new Syntax(
                         new[]
                         {
-                            Comparison,
+                            Expression,
                             new Syntax(
                                 new[]
                                 {
                                     new Syntax(
                                         new Token(Terminals.COMMA)
                                     ),
-                                    Comparison
+                                    Expression
                                 },
                                 SyntaxFlags.All | SyntaxFlags.Repeat
                             )
                         },
                         SyntaxFlags.All
                     ),
-                    Comparison
+                    Expression
                 },
                 SyntaxFlags.Any
             );
@@ -162,7 +174,7 @@
                     new Syntax(
                         new[]
                         {
-                            Comparisons,
+                            Expressions,
                             new Syntax(
                                 new Token(Terminals.EMPTY)
                             )
@@ -174,7 +186,7 @@
                     )
                 },
                 SyntaxFlags.All
-            );
+            ).WithFactory(ExpressionFactory.Condition);
 
             ConditionOperator = new Syntax(
                 new[]
@@ -209,101 +221,31 @@
                 SyntaxFlags.Any
             );
 
-            Copy = new Syntax(
-                new[]
-                {
-                    new Syntax(
-                        new Token(Terminals.CLAIM)
-                    ),
-                    new Syntax(
-                        new Token(Terminals.ASSIGN)
-                    ),
-                    new Syntax(
-                        new Token(Terminals.IDENTIFIER, TokenChannel.Normal, TokenFlags.Identifier)
-                    ),
-                },
-                SyntaxFlags.All
-            );
-
-            Assignment = new Syntax(
-                new[]
-                {
-                    Property,
-                    new Syntax(
-                        new Token(Terminals.ASSIGN, TokenChannel.Normal)
-                    ),
-                    Expression
-                },
-                SyntaxFlags.All
-            );
-
-            Assignments = new Syntax(
-                new[]
-                {
-                    new Syntax(
-                        new[]
-                        {
-                            Assignment,
-                            new Syntax(
-                                new[]
-                                {
-                                    new Syntax(
-                                        new Token(Terminals.COMMA)
-                                    ),
-                                    Assignment
-                                },
-                                SyntaxFlags.All | SyntaxFlags.Repeat
-                            )
-                        },
-                        SyntaxFlags.All
-                    ),
-                    Assignment,
-                },
-                SyntaxFlags.Any
-            );
-
-            Create = new Syntax(
-                new[]
-                {
-                    Assignments
-                },
-                SyntaxFlags.All
-            );
-
-            Issuance = new Syntax(
-                new[]
-                {
-                    new Syntax(
-                        new Token(Terminals.ISSUE, TokenChannel.Normal)
-                    ),
-                    new Syntax(
-                        new Token(Terminals.ADD, TokenChannel.Normal)
-                    )
-                },
-                SyntaxFlags.Any
-            );
-
             Issue = new Syntax(
                 new[]
                 {
-                    Issuance,
-                    new Syntax(
-                        new Token(Terminals.O_BRACKET)
-                    ),
                     new Syntax(
                         new[]
                         {
-                            Copy,
-                            Create
+                            new Syntax(
+                                new Token(Terminals.ISSUE, TokenChannel.Normal)
+                            ),
+                            new Syntax(
+                                new Token(Terminals.ADD, TokenChannel.Normal)
+                            )
                         },
                         SyntaxFlags.Any
                     ),
+                    new Syntax(
+                        new Token(Terminals.O_BRACKET)
+                    ),
+                    Expressions,
                     new Syntax(
                         new Token(Terminals.C_BRACKET)
                     )
                 },
                 SyntaxFlags.All
-            );
+            ).WithFactory(ExpressionFactory.Issue);
 
             Rule = new Syntax(
                 new[]
@@ -318,40 +260,34 @@
                     )
                 },
                 SyntaxFlags.All
-            );
+            ).WithFactory(ExpressionFactory.Rule);
         }
 
         public static Syntax Property { get; private set; }
 
-        public static Syntax BooleanOperator { get; private set; }
+        public static Syntax BinaryOperator { get; private set; }
+
+        public static Syntax String { get; private set; }
+
+        public static Syntax Number { get; private set; }
+
+        public static Syntax Boolean { get; private set; }
+
+        public static Syntax Identifier { get; private set; }
+
+        public static Syntax IdentifierProperty { get; private set; }
 
         public static Syntax Value { get; private set; }
 
-        public static Syntax ValueOrProperty { get; private set; }
-
-        public static Syntax ExpressionOperator { get; private set; }
-
         public static Syntax Expression { get; private set; }
 
-        public static Syntax Comparison { get; private set; }
-
-        public static Syntax Comparisons { get; private set; }
+        public static Syntax Expressions { get; private set; }
 
         public static Syntax Condition { get; private set; }
 
         public static Syntax ConditionOperator { get; private set; }
 
         public static Syntax Conditions { get; private set; }
-
-        public static Syntax Assignment { get; private set; }
-
-        public static Syntax Assignments { get; private set; }
-
-        public static Syntax Copy { get; private set; }
-
-        public static Syntax Create { get; private set; }
-
-        public static Syntax Issuance { get; private set; }
 
         public static Syntax Issue { get; private set; }
 

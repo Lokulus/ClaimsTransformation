@@ -176,12 +176,16 @@ namespace ClaimsTransformation.Language.Parser
 
         protected virtual bool TryParseBoolean(StringReader reader, Syntax syntax, Token token, out TokenValue result)
         {
-            throw new NotImplementedException();
+            //TODO: Implement me.
+            result = default(TokenValue);
+            return false;
         }
 
         protected virtual bool TryParseNumber(StringReader reader, Syntax syntax, Token token, out TokenValue result)
         {
-            throw new NotImplementedException();
+            //TODO: Implement me.
+            result = default(TokenValue);
+            return false;
         }
 
         protected virtual bool TryParseString(StringReader reader, Syntax syntax, Token token, out TokenValue result)

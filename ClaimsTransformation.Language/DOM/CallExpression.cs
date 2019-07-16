@@ -8,7 +8,7 @@ namespace ClaimsTransformation.Language.DOM
 {
     public class CallExpression : Expression
     {
-        public CallExpression(string name, IEnumerable<Expression> arguments)
+        public CallExpression(LiteralExpression name, IEnumerable<Expression> arguments)
         {
             this.Name = name;
             if (arguments != null)
@@ -21,7 +21,7 @@ namespace ClaimsTransformation.Language.DOM
             }
         }
 
-        public string Name { get; private set; }
+        public LiteralExpression Name { get; private set; }
 
         public Expression[] Arguments { get; private set; }
 
@@ -30,7 +30,7 @@ namespace ClaimsTransformation.Language.DOM
             var hashCode = 0;
             unchecked
             {
-                if (!string.IsNullOrEmpty(this.Name))
+                if (this.Name != null)
                 {
                     hashCode += this.Name.GetHashCode();
                 }
@@ -48,9 +48,13 @@ namespace ClaimsTransformation.Language.DOM
         public override string ToString()
         {
             var builder = new StringBuilder();
-            if (!string.IsNullOrEmpty(this.Name))
+            if (this.Name != null)
             {
                 builder.Append(this.Name);
+            }
+            else
+            {
+                builder.Append("{EMPTY}");
             }
             builder.Append(Terminals.O_BRACKET);
             if (this.Arguments != null)
@@ -88,7 +92,7 @@ namespace ClaimsTransformation.Language.DOM
             {
                 return true;
             }
-            if (!string.Equals(this.Name, other.Name, StringComparison.OrdinalIgnoreCase))
+            if (!object.Equals(this.Name, other.Name))
             {
                 return false;
             }

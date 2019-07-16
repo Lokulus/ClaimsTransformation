@@ -28,7 +28,7 @@ namespace ClaimsTransformation.Tests
             var input = "type == \"http://contoso.com/role\"";
             var reader = new StringReader(input);
             var result = default(TokenValue);
-            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Comparison, out result));
+            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Expression, out result));
             Assert.IsTrue(reader.EOF);
         }
 
@@ -38,7 +38,7 @@ namespace ClaimsTransformation.Tests
             var input = "type == \"http://contoso.com/role\", value == \"Editor\", valuetype == \"string\"";
             var reader = new StringReader(input);
             var result = default(TokenValue);
-            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Comparisons, out result));
+            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Expressions, out result));
             Assert.IsTrue(reader.EOF);
         }
 
@@ -90,7 +90,7 @@ namespace ClaimsTransformation.Tests
             var input = "value = C1.type + \" \" + C2.type";
             var reader = new StringReader(input);
             var result = default(TokenValue);
-            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Assignment, out result));
+            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Expression, out result));
             Assert.IsTrue(reader.EOF);
         }
 
@@ -100,12 +100,12 @@ namespace ClaimsTransformation.Tests
             var input = "type = C1.type, value = C1.type + \" \" + C2.type, valuetype = \"string\"";
             var reader = new StringReader(input);
             var result = default(TokenValue);
-            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Assignments, out result));
+            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Expressions, out result));
             Assert.IsTrue(reader.EOF);
         }
 
         [Test]
-        public void Issue_New()
+        public void Issue_Create()
         {
             var input = "Issue(type = C1.type, value = C1.type + \" \" + C2.type)";
             var reader = new StringReader(input);
@@ -126,9 +126,22 @@ namespace ClaimsTransformation.Tests
                 new RuleExpression(
                     new[]
                     {
-                        new ConditionExpression("C1", Enumerable.Empty<BinaryExpression>())
+                        new ConditionExpression(
+                            new LiteralExpression("C1"),
+                            Enumerable.Empty<BinaryExpression>()
+                        )
                     },
-                    new CopyClaimExpression(IssueDuration.Permanent, "C1")
+                    new IssueExpression(
+                        new LiteralExpression("Issue"),
+                        new[]
+                        {
+                            new BinaryExpression(
+                                new LiteralExpression("claim"),
+                                new LiteralExpression("="),
+                                new LiteralExpression("C1")
+                            )
+                        }
+                    )
                 )
             };
             var actual = this.Parser.Parse(input);
@@ -147,10 +160,7 @@ namespace ClaimsTransformation.Tests
             };
             var expected = new[]
             {
-                new RuleExpression(
-                    Enumerable.Empty<ConditionExpression>(),
-                    new CopyClaimExpression(IssueDuration.Permanent, "C1")
-                )
+               default(RuleExpression)
             };
             var actual = this.Parser.Parse(input);
             Assert.AreEqual(expected, actual);
