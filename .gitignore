@@ -60,6 +60,6 @@ dkms.conf
 Debug/
 Release/
 distribution/
-
+obj/
 #Nuget
 packages/
