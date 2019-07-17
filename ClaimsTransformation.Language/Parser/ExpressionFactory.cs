@@ -26,35 +26,38 @@ namespace ClaimsTransformation.Language.Parser
 
         public static BinaryExpression Binary(TokenValue value)
         {
-            var args = Expressions(value.Children);
-            return Binary(args);
-        }
-
-        private static BinaryExpression Binary(Expression[] expressions)
-        {
-            var queue = new Queue<Expression>(expressions);
-            var left = default(Expression);
-            var @operator = default(LiteralExpression);
-            var right = default(Expression);
-            while (queue.Count > 0)
+            var result = default(BinaryExpression);
+            var args = new Queue<Expression>(Expressions(value.Children));
+            while (args.Count > 0)
             {
-                if (left == null)
+                if (result == null)
                 {
-                    left = queue.Dequeue();
-                }
-                else if (@operator == null)
-                {
-                    @operator = queue.Dequeue() as LiteralExpression;
-                }
-                else if (right == null)
-                {
-                    right = queue.Dequeue();
+                    if (args.Count >= 3)
+                    {
+                        result = new BinaryExpression(
+                            args.Dequeue(),
+                            args.Dequeue() as LiteralExpression,
+                            args.Dequeue()
+                        );
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
                 }
                 else
                 {
-                    if (queue.Count > 1)
+                    if (args.Count >= 2)
                     {
-                        right = Binary(new[] { right, queue.Dequeue(), queue.Dequeue() });
+                        result = new BinaryExpression(
+                            result.Left,
+                            result.Operator,
+                            new BinaryExpression(
+                                result.Right,
+                                args.Dequeue() as LiteralExpression,
+                                args.Dequeue()
+                            )
+                        );
                     }
                     else
                     {
@@ -62,7 +65,7 @@ namespace ClaimsTransformation.Language.Parser
                     }
                 }
             }
-            return new BinaryExpression(left, @operator, right);
+            return result;
         }
 
         public static ConditionExpression Condition(TokenValue value)
