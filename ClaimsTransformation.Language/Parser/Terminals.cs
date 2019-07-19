@@ -30,6 +30,14 @@
 
         public const string REGEXP_NOT_MATCH = "!~";
 
+        public const string GREATER = ">";
+
+        public const string GREATER_EQUAL = ">=";
+
+        public const string LESS = "<";
+
+        public const string LESS_EQUAL = "<=";
+
         public const string REGEX_REPLACE = "RegExReplace";
 
         public const string ASSIGN = "=";
@@ -67,5 +75,11 @@
         public const string STRING_TYPE = "string";
 
         public const string BOOLEAN_TYPE = "boolean";
+
+        public const string EXISTS = "EXISTS";
+
+        public const string NOT_EXISTS = "NOT EXISTS";
+
+        public const string COUNT = "COUNT";
     }
 }

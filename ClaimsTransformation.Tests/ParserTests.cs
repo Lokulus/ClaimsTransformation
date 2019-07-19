@@ -52,6 +52,17 @@ namespace ClaimsTransformation.Tests
             Assert.IsTrue(reader.EOF);
         }
 
+        [TestCase("C1:EXISTS([type == \"http://contoso.com/role\", value == \"Editor\"])")]
+        [TestCase("C1:NOT EXISTS([type == \"http://contoso.com/role\", value == \"Editor\"])")]
+        [TestCase("C1:COUNT([type == \"http://contoso.com/role\", value == \"Editor\"]) > 10")]
+        public void AggregateCondition(string input)
+        {
+            var reader = new StringReader(input);
+            var result = default(TokenValue);
+            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Condition, out result));
+            Assert.IsTrue(reader.EOF);
+        }
+
         [Test]
         public void Conditions()
         {
@@ -286,6 +297,102 @@ namespace ClaimsTransformation.Tests
                                         new LiteralExpression("Dogs")
                                     }
                                 )
+                            )
+                        }
+                    )
+                )
+            };
+            var actual = this.Parser.Parse(input);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void Test004()
+        {
+            var input = new[]
+            {
+                "C1:EXISTS([type == \"http://contoso.com/role\", value == \"Manager\"]) => Issue(claim = C1);"
+            };
+            var expected = new[]
+            {
+                new RuleExpression(
+                    new[]
+                    {
+                        new AggregateConditionExpression(
+                            new LiteralExpression("C1"),
+                            new LiteralExpression("EXISTS"),
+                            new[]
+                            {
+                                new BinaryExpression(
+                                    new LiteralExpression("type"),
+                                    new LiteralExpression("=="),
+                                    new LiteralExpression("http://contoso.com/role")
+                                ),
+                                new BinaryExpression(
+                                    new LiteralExpression("value"),
+                                    new LiteralExpression("=="),
+                                    new LiteralExpression("Manager")
+                                )
+                            }
+                        )
+                    },
+                    new IssueExpression(
+                        new LiteralExpression("Issue"),
+                         new[]
+                        {
+                            new BinaryExpression(
+                                new LiteralExpression("claim"),
+                                new LiteralExpression("="),
+                                new LiteralExpression("C1")
+                            )
+                        }
+                    )
+                )
+            };
+            var actual = this.Parser.Parse(input);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void Test005()
+        {
+            var input = new[]
+            {
+                "C1:COUNT([type == \"http://contoso.com/role\", value == \"Manager\"]) == 1 => Issue(claim = C1);"
+            };
+            var expected = new[]
+            {
+                new RuleExpression(
+                    new[]
+                    {
+                        new AggregateConditionExpression(
+                            new LiteralExpression("C1"),
+                            new LiteralExpression("COUNT"),
+                            new[]
+                            {
+                                new BinaryExpression(
+                                    new LiteralExpression("type"),
+                                    new LiteralExpression("=="),
+                                    new LiteralExpression("http://contoso.com/role")
+                                ),
+                                new BinaryExpression(
+                                    new LiteralExpression("value"),
+                                    new LiteralExpression("=="),
+                                    new LiteralExpression("Manager")
+                                )
+                            },
+                            new LiteralExpression("=="),
+                            new LiteralExpression("1")
+                        )
+                    },
+                    new IssueExpression(
+                        new LiteralExpression("Issue"),
+                         new[]
+                        {
+                            new BinaryExpression(
+                                new LiteralExpression("claim"),
+                                new LiteralExpression("="),
+                                new LiteralExpression("C1")
                             )
                         }
                     )

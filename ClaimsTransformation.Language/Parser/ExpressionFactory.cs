@@ -84,6 +84,21 @@ namespace ClaimsTransformation.Language.Parser
             return new ConditionExpression(identifier, expressions);
         }
 
+        public static AggregateConditionExpression AggregateCondition(TokenValue value)
+        {
+            var args = Expressions(value.Children);
+            var literals = args.OfType<LiteralExpression>().ToArray();
+            var expressions = args.OfType<BinaryExpression>();
+            switch (literals.Length)
+            {
+                case 2:
+                    return new AggregateConditionExpression(literals[0], literals[1], expressions);
+                case 4:
+                    return new AggregateConditionExpression(literals[0], literals[1], expressions, literals[2], literals[3]);
+            }
+            throw new NotImplementedException();
+        }
+
         public static IssueExpression Issue(TokenValue value)
         {
             var args = Expressions(value.Children);

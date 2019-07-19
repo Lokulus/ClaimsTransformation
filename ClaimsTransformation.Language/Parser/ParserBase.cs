@@ -183,7 +183,20 @@ namespace ClaimsTransformation.Language.Parser
 
         protected virtual bool TryParseNumber(StringReader reader, Syntax syntax, Token token, out TokenValue result)
         {
-            //TODO: Implement me.
+            reader.Begin();
+            reader.Align();
+            if (char.IsNumber(reader.Peek()))
+            {
+                var builder = new StringBuilder();
+                do
+                {
+                    builder.Append(reader.Read());
+                } while (char.IsNumber(reader.Peek()));
+                reader.Complete();
+                result = new TokenValue(syntax, token, builder.ToString());
+                return true;
+            }
+            reader.Rollback();
             result = default(TokenValue);
             return false;
         }
