@@ -30,6 +30,8 @@
 
         public const string REGEXP_NOT_MATCH = "!~";
 
+        public const string REGEX_REPLACE = "RegExReplace";
+
         public const string ASSIGN = "=";
 
         public const string CONCAT = "+";

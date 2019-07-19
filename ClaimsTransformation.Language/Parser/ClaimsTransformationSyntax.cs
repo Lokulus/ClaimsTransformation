@@ -4,6 +4,13 @@
     {
         static ClaimsTransformationSyntax()
         {
+            Phase1();
+            Phase2();
+            Phase3();
+        }
+
+        private static void Phase1()
+        {
             Property = new Syntax(
                 new[]
                 {
@@ -18,6 +25,16 @@
                     ),
                     new Syntax(
                         new Token(Terminals.VALUE, TokenChannel.Normal)
+                    )
+                },
+                SyntaxFlags.Any
+            );
+
+            Function = new Syntax(
+                new[]
+                {
+                    new Syntax(
+                        new Token(Terminals.REGEX_REPLACE, TokenChannel.Normal)
                     )
                 },
                 SyntaxFlags.Any
@@ -86,12 +103,64 @@
             Value = new Syntax(
                 new[]
                 {
-                    Property,
                     IdentifierProperty,
+                    Property,
                     String,
                     Number,
                     Boolean,
                     Identifier,
+                },
+                SyntaxFlags.Any
+            );
+        }
+
+        private static void Phase2()
+        {
+            Values = new Syntax(
+                new[]
+                {
+                    new Syntax(
+                        new[]
+                        {
+                            Value,
+                            new Syntax(
+                                new[]
+                                {
+                                    new Syntax(
+                                        new Token(Terminals.COMMA)
+                                    ),
+                                    Value
+                                },
+                                SyntaxFlags.All | SyntaxFlags.Repeat
+                            )
+                        },
+                        SyntaxFlags.All
+                    ),
+                    Value
+                },
+                SyntaxFlags.Any
+            );
+
+            Call = new Syntax(
+                new[]
+                {
+                    Function,
+                    new Syntax(
+                        new Token(Terminals.O_BRACKET)
+                    ),
+                    Values,
+                    new Syntax(
+                        new Token(Terminals.C_BRACKET)
+                    )
+                },
+                SyntaxFlags.All
+            ).WithFactory(ExpressionFactory.Call);
+
+            Value = new Syntax(
+                new[]
+                {
+                    Call,
+                    Value
                 },
                 SyntaxFlags.Any
             );
@@ -143,7 +212,10 @@
                 },
                 SyntaxFlags.Any
             );
+        }
 
+        private static void Phase3()
+        {
             Condition = new Syntax(
                 new[]
                 {
@@ -265,6 +337,8 @@
 
         public static Syntax Property { get; private set; }
 
+        public static Syntax Function { get; private set; }
+
         public static Syntax BinaryOperator { get; private set; }
 
         public static Syntax String { get; private set; }
@@ -278,6 +352,10 @@
         public static Syntax IdentifierProperty { get; private set; }
 
         public static Syntax Value { get; private set; }
+
+        public static Syntax Values { get; private set; }
+
+        public static Syntax Call { get; private set; }
 
         public static Syntax Expression { get; private set; }
 

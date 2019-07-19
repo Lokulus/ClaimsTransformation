@@ -85,6 +85,16 @@ namespace ClaimsTransformation.Tests
         }
 
         [Test]
+        public void Call()
+        {
+            var input = "RegExReplace(C1.value, \"Cats\", \"Dogs\")";
+            var reader = new StringReader(input);
+            var result = default(TokenValue);
+            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Call, out result));
+            Assert.IsTrue(reader.EOF);
+        }
+
+        [Test]
         public void Assignment()
         {
             var input = "value = C1.type + \" \" + C2.type";
@@ -231,6 +241,51 @@ namespace ClaimsTransformation.Tests
                                 new LiteralExpression("valuetype"),
                                 new LiteralExpression("="),
                                 new LiteralExpression("string")
+                            )
+                        }
+                    )
+                )
+            };
+            var actual = this.Parser.Parse(input);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void Test003()
+        {
+            var input = new[]
+            {
+                "C1:[] => Issue(value = RegExReplace(C1.value, \"Cats\", \"Dogs\"));"
+            };
+            var expected = new[]
+            {
+                new RuleExpression(
+                    new[]
+                    {
+                        new ConditionExpression(
+                            new LiteralExpression("C1"),
+                            Enumerable.Empty<BinaryExpression>()
+                        )
+                    },
+                    new IssueExpression(
+                        new LiteralExpression("Issue"),
+                        new[]
+                        {
+                            new BinaryExpression(
+                                new LiteralExpression("value"),
+                                new LiteralExpression("="),
+                                new CallExpression(
+                                    new LiteralExpression("RegExReplace"),
+                                    new Expression[]
+                                    {
+                                        new PropertyExpression(
+                                            new LiteralExpression("C1"),
+                                            new LiteralExpression("value")
+                                        ),
+                                        new LiteralExpression("Cats"),
+                                        new LiteralExpression("Dogs")
+                                    }
+                                )
                             )
                         }
                     )

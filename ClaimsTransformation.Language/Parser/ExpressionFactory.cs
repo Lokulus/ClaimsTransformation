@@ -68,6 +68,14 @@ namespace ClaimsTransformation.Language.Parser
             return result;
         }
 
+        public static CallExpression Call(TokenValue value)
+        {
+            var args = Expressions(value.Children);
+            var name = args.OfType<LiteralExpression>().FirstOrDefault();
+            var arguments = args.Except(new[] { name });
+            return new CallExpression(name, arguments);
+        }
+
         public static ConditionExpression Condition(TokenValue value)
         {
             var args = Expressions(value.Children);
