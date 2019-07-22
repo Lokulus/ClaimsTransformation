@@ -17,6 +17,6 @@ namespace ClaimsTransformation.Engine
 
         public IEnumerable<Claim> Input { get; private set; }
 
-        public IList<Claim> Output { get; private set; }
+        public IEnumerable<Claim> Output { get; private set; }
     }
 }

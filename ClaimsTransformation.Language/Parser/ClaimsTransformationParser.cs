@@ -11,17 +11,9 @@ namespace ClaimsTransformation.Language.Parser
 
         }
 
-        public IEnumerable<RuleExpression> Parse(IEnumerable<string> expressions)
+        public RuleExpression Parse(string rule)
         {
-            foreach (var expression in expressions)
-            {
-                yield return this.Parse(expression);
-            }
-        }
-
-        protected virtual RuleExpression Parse(string expression)
-        {
-            var reader = new StringReader(expression);
+            var reader = new StringReader(rule);
             return this.Parse(reader);
         }
 
