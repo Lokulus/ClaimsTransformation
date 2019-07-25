@@ -4,6 +4,8 @@ namespace ClaimsTransformation.Language.DOM
 {
     public abstract class Expression
     {
+        public abstract ExpressionType Type { get; }
+
         public override int GetHashCode()
         {
             throw new NotImplementedException();
@@ -40,5 +42,17 @@ namespace ClaimsTransformation.Language.DOM
         {
             return !(a == b);
         }
+    }
+
+    public enum ExpressionType
+    {
+        Literal,
+        Propery,
+        Unary,
+        Binary,
+        Call,
+        Condition,
+        Issue,
+        Rule
     }
 }

@@ -24,6 +24,14 @@ namespace ClaimsTransformation.Language.DOM
 
         public IssueExpression Issue { get; private set; }
 
+        public override ExpressionType Type
+        {
+            get
+            {
+                return ExpressionType.Rule;
+            }
+        }
+
         public override int GetHashCode()
         {
             var hashCode = base.GetHashCode();

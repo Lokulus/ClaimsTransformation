@@ -24,6 +24,22 @@ namespace ClaimsTransformation.Language.DOM
 
         public BinaryExpression[] Expressions { get; private set; }
 
+        public bool IsEmpty
+        {
+            get
+            {
+                return this.Expressions.Length == 0;
+            }
+        }
+
+        public override ExpressionType Type
+        {
+            get
+            {
+                return ExpressionType.Condition;
+            }
+        }
+
         public override int GetHashCode()
         {
             var hashCode = 0;

@@ -30,7 +30,7 @@ namespace ClaimsTransformation.Engine
             return context.Output;
         }
 
-        protected virtual void Transform(IEnumerable<string> rules, ClaimsTransformationContext context)
+        protected virtual void Transform(IEnumerable<string> rules, IClaimsTransformationContext context)
         {
             foreach (var rule in rules)
             {
@@ -44,9 +44,10 @@ namespace ClaimsTransformation.Engine
             }
         }
 
-        protected virtual void Transform(RuleExpression expression, ClaimsTransformationContext context)
+        protected virtual void Transform(RuleExpression expression, IClaimsTransformationContext context)
         {
-            throw new NotImplementedException();
+            var visitor = new ExpressionVisitor(context);
+            visitor.Visit(expression);
         }
     }
 }

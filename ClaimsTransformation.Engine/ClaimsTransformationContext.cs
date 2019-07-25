@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace ClaimsTransformation.Engine
 {
-    public class ClaimsTransformationContext
+    public class ClaimsTransformationContext : IClaimsTransformationContext
     {
         private ClaimsTransformationContext()
         {
@@ -15,8 +15,8 @@ namespace ClaimsTransformation.Engine
             this.Input = input;
         }
 
-        public IEnumerable<Claim> Input { get; private set; }
+        public IEnumerable<Claim> Input { get; set; }
 
-        public IEnumerable<Claim> Output { get; private set; }
+        public IEnumerable<Claim> Output { get; set; }
     }
 }

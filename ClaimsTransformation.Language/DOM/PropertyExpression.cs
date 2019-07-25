@@ -14,6 +14,14 @@ namespace ClaimsTransformation.Language.DOM
 
         public LiteralExpression Name { get; private set; }
 
+        public override ExpressionType Type
+        {
+            get
+            {
+                return ExpressionType.Propery;
+            }
+        }
+
         public override int GetHashCode()
         {
             var hashCode = 0;

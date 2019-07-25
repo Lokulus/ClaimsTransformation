@@ -25,6 +25,14 @@ namespace ClaimsTransformation.Language.DOM
 
         public Expression[] Arguments { get; private set; }
 
+        public override ExpressionType Type
+        {
+            get
+            {
+                return ExpressionType.Call;
+            }
+        }
+
         public override int GetHashCode()
         {
             var hashCode = 0;
