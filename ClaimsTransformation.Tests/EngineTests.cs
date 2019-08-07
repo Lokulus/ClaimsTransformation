@@ -38,13 +38,13 @@ namespace ClaimsTransformation.Tests
         {
             const string EXPRESSION =
                 @"C1:[] " +
-                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""StashPublic"");";
+                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Public"");";
 
             var positive = new List<Claim>();
 
             var pass = this.Engine.Transform(EXPRESSION, positive);
 
-            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "StashPublic"));
+            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Public"));
         }
 
         /// <summary>
@@ -55,21 +55,21 @@ namespace ClaimsTransformation.Tests
         {
             const string EXPRESSION =
                 @"C1:[TYPE == ""http://namespace/subject"", VALUE == ""robh""] " +
-                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""StashAdmin"");";
+                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Admin"");";
 
             var positive = new List<Claim>();
             positive.Add(new Claim("http://namespace/subject", "robh"));
 
             var pass = this.Engine.Transform(EXPRESSION, positive);
 
-            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "StashAdmin"));
+            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Admin"));
 
             var negative = new List<Claim>();
             negative.Add(new Claim("http://namespace/subject", "aidang"));
 
             var fail = this.Engine.Transform(EXPRESSION, negative);
 
-            Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "StashAdmin"));
+            Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "Admin"));
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace ClaimsTransformation.Tests
                 @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Developers"");";
             const string EXPRESSION_2 =
                 @"C2:[TYPE == ""http://namespace/role"", VALUE == ""Developers""] " +
-                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""StashAdmin"");";
+                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Admin"");";
 
             var positive = new List<Claim>();
             positive.Add(new Claim("http://namespace/subject", "robh"));
@@ -91,7 +91,7 @@ namespace ClaimsTransformation.Tests
             var pass = this.Engine.Transform(new[] { EXPRESSION_1, EXPRESSION_2 }, positive);
 
             Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Developers"));
-            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "StashAdmin"));
+            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Admin"));
 
             var negative = new List<Claim>();
             negative.Add(new Claim("http://namespace/subject", "aidang"));
@@ -99,7 +99,7 @@ namespace ClaimsTransformation.Tests
             var fail = this.Engine.Transform(new[] { EXPRESSION_1, EXPRESSION_2 }, negative);
 
             Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "Developers"));
-            Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "StashAdmin"));
+            Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "Admin"));
         }
 
         /// <summary>
@@ -109,24 +109,24 @@ namespace ClaimsTransformation.Tests
         public void Scenario004()
         {
             const string EXPRESSION =
-                @"C1:EXISTS[TYPE == ""http://namespace/client"", VALUE == ""CodeApi""] && " +
+                @"C1:EXISTS[TYPE == ""http://namespace/client"", VALUE == ""Api""] && " +
                 @"C2:NOT EXISTS[TYPE == ""http://namespace/subject"", VALUE == ""Scenario004""] " +
-                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""StashAdmin"");";
+                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Admin"");";
 
             var positive = new List<Claim>();
-            positive.Add(new Claim("http://namespace/client", "CodeApi"));
+            positive.Add(new Claim("http://namespace/client", "Api"));
 
             var pass = this.Engine.Transform(EXPRESSION, positive);
 
-            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "StashAdmin"));
+            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Admin"));
 
             var negative = new List<Claim>();
-            negative.Add(new Claim("http://namespace/client", "CodeApi"));
+            negative.Add(new Claim("http://namespace/client", "Api"));
             negative.Add(new Claim("http://namespace/subject", "Scenario004"));
 
             var fail = this.Engine.Transform(EXPRESSION, negative);
 
-            Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "StashAdmin"));
+            Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "Admin"));
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace ClaimsTransformation.Tests
                 @"=> ADD(TYPE = ""http://namespace/role"", VALUE = ""Developers"");";
             const string EXPRESSION_2 =
                 @"C2:[TYPE == ""http://namespace/role"", VALUE == ""Developers""] " +
-                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""StashAdmin"");";
+                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Admin"");";
 
             var positive = new List<Claim>();
             positive.Add(new Claim("http://namespace/subject", "robh"));
@@ -237,7 +237,7 @@ namespace ClaimsTransformation.Tests
             var pass = this.Engine.Transform(new[] { EXPRESSION_1, EXPRESSION_2 }, positive);
 
             Assert.IsFalse(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Developers")); //Transient claim should not be present.
-            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "StashAdmin"));
+            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Admin"));
         }
 
         /// <summary>
@@ -399,10 +399,9 @@ namespace ClaimsTransformation.Tests
                 @"C1: EXISTS([]) => ISSUE(TYPE = ""role"", VALUE = ""anonymous"");";
 
             var positive = new List<Claim>();
-            positive.Add(new Claim("client_id", "codify"));
             positive.Add(new Claim("scope", "openid"));
             positive.Add(new Claim("scope", "api"));
-            positive.Add(new Claim("scope", "api.codeapi"));
+            positive.Add(new Claim("scope", "api.Api"));
             positive.Add(new Claim("scope", "name"));
             positive.Add(new Claim("scope", "roles"));
             positive.Add(new Claim("sub", "d44d4e00-d914-400a-a97d-b9dd0a50aa9b"));
@@ -434,10 +433,9 @@ namespace ClaimsTransformation.Tests
                 @"C1: [] => ISSUE(TYPE = ""role"", VALUE = ""anonymous"");";
 
             var positive = new List<Claim>();
-            positive.Add(new Claim("client_id", "codify"));
             positive.Add(new Claim("scope", "openid"));
             positive.Add(new Claim("scope", "api"));
-            positive.Add(new Claim("scope", "api.codeapi"));
+            positive.Add(new Claim("scope", "api.Api"));
             positive.Add(new Claim("scope", "name"));
             positive.Add(new Claim("scope", "roles"));
             positive.Add(new Claim("sub", "d44d4e00-d914-400a-a97d-b9dd0a50aa9b"));
@@ -464,21 +462,21 @@ namespace ClaimsTransformation.Tests
         {
             const string EXPRESSION =
                 @"[TYPE == ""http://namespace/subject"", VALUE == ""robh""] " +
-                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""StashAdmin"");";
+                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Admin"");";
 
             var positive = new List<Claim>();
             positive.Add(new Claim("http://namespace/subject", "robh"));
 
             var pass = this.Engine.Transform(EXPRESSION, positive);
 
-            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "StashAdmin"));
+            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Admin"));
 
             var negative = new List<Claim>();
             negative.Add(new Claim("http://namespace/subject", "aidang"));
 
             var fail = this.Engine.Transform(EXPRESSION, negative);
 
-            Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "StashAdmin"));
+            Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "Admin"));
         }
 
         /// <summary>
@@ -488,13 +486,13 @@ namespace ClaimsTransformation.Tests
         public void Scenario017()
         {
             const string EXPRESSION =
-                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""StashAdmin"");";
+                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Admin"");";
 
             var positive = new List<Claim>();
 
             var pass = this.Engine.Transform(EXPRESSION, positive);
 
-            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "StashAdmin"));
+            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Admin"));
         }
 
         /// <summary>
@@ -504,13 +502,13 @@ namespace ClaimsTransformation.Tests
         public void Scenario018()
         {
             const string EXPRESSION =
-                @"C1: [] => ISSUE(TYPE = ""http://namespace/role"", VALUE = ""StashAdmin"");";
+                @"C1: [] => ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Admin"");";
 
             var positive = new List<Claim>();
 
             var pass = this.Engine.Transform(EXPRESSION, positive);
 
-            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "StashAdmin"));
+            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Admin"));
         }
 
         /// <summary>
@@ -549,7 +547,7 @@ namespace ClaimsTransformation.Tests
         {
             const string EXPRESSION =
                 @"[TYPE == ""http://namespace/subject"", VALUE == ""robh""] " +
-                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""StashAdmin"");";
+                @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Admin"");";
 
             var positive = new List<Claim>();
             positive.Add(new Claim("http://namespace/subject", "robh"));
@@ -557,7 +555,7 @@ namespace ClaimsTransformation.Tests
             var pass = this.Engine.Transform(EXPRESSION, positive);
 
             Assert.IsFalse(pass.Contains(new Claim("http://namespace/subject", "robh")));
-            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "StashAdmin"));
+            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "http://namespace/role", "Admin"));
 
             var negative = new List<Claim>();
             negative.Add(new Claim("http://namespace/subject", "aidang"));
@@ -565,7 +563,7 @@ namespace ClaimsTransformation.Tests
             var fail = this.Engine.Transform(EXPRESSION, negative);
 
             Assert.IsFalse(pass.Contains(new Claim("http://namespace/subject", "robh")));
-            Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "StashAdmin"));
+            Assert.IsFalse(this.Utility.HasIssuedClaim(fail, "http://namespace/role", "Admin"));
         }
 
         /// <summary>

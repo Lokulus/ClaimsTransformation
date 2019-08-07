@@ -28,7 +28,7 @@
                     )
                 },
                 SyntaxFlags.Any
-            );
+            ).WithFactory(ExpressionFactory.ClaimProperty);
 
             Function = new Syntax(
                 new[]
@@ -122,21 +122,14 @@
             IdentifierProperty = new Syntax(
                 new[]
                 {
-                    String,
+                    Identifier,
                     new Syntax(
-                        new[]
-                        {
-                            Identifier,
-                            new Syntax(
-                                new Token(Terminals.DOT)
-                            ),
-                            Property
-                        },
-                        SyntaxFlags.All
-                    ).WithFactory(ExpressionFactory.Property)
+                        new Token(Terminals.DOT)
+                    ),
+                    Property
                 },
-                SyntaxFlags.Any
-            );
+                SyntaxFlags.All
+            ).WithFactory(ExpressionFactory.ConditionProperty);
 
             Value = new Syntax(
                 new[]

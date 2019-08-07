@@ -26,8 +26,10 @@ namespace ClaimsTransformation.Engine
             {
                 case ExpressionType.Literal:
                     return this.Visit(expression as LiteralExpression);
-                case ExpressionType.Propery:
-                    return this.Visit(expression as PropertyExpression);
+                case ExpressionType.ClaimPropery:
+                    return this.Visit(expression as ClaimPropertyExpression);
+                case ExpressionType.ConditionProperty:
+                    return this.Visit(expression as ConditionPropertyExpression);
                 case ExpressionType.Unary:
                     return this.Visit(expression as UnaryExpression);
                 case ExpressionType.Binary:
@@ -47,10 +49,19 @@ namespace ClaimsTransformation.Engine
 
         public object Visit(LiteralExpression expression)
         {
+            if (expression == null)
+            {
+                return null;
+            }
             return expression.Value;
         }
 
-        public object Visit(PropertyExpression expression)
+        public object Visit(ClaimPropertyExpression expression)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Visit(ConditionPropertyExpression expression)
         {
             throw new NotImplementedException();
         }
@@ -62,7 +73,10 @@ namespace ClaimsTransformation.Engine
 
         public object Visit(BinaryExpression expression)
         {
-            throw new NotImplementedException();
+            var left = this.Visit(expression.Left);
+            var @operator = this.Visit(expression.Operator);
+            var right = this.Visit(expression.Right);
+            return ExpressionEvaluator.Evaluate(left, @operator, right);
         }
 
         public object Visit(CallExpression expression)

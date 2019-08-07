@@ -47,7 +47,8 @@ namespace ClaimsTransformation.Language.DOM
     public enum ExpressionType
     {
         Literal,
-        Propery,
+        ClaimPropery,
+        ConditionProperty,
         Unary,
         Binary,
         Call,

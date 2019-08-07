@@ -12,16 +12,20 @@ namespace ClaimsTransformation.Language.Parser
             return new LiteralExpression(value.Value);
         }
 
-        public static PropertyExpression Property(TokenValue value)
+        public static ClaimPropertyExpression ClaimProperty(TokenValue value)
+        {
+            return new ClaimPropertyExpression(value.Value);
+        }
+
+        public static ConditionPropertyExpression ConditionProperty(TokenValue value)
         {
             var args = Expressions(value.Children);
-            if (args.Length != 2)
-            {
-                throw new NotImplementedException();
-            }
-            var source = args[0] as LiteralExpression;
-            var name = args[1] as LiteralExpression;
-            return new PropertyExpression(source, name);
+            var source = args.OfType<LiteralExpression>().FirstOrDefault();
+            var property = args.OfType<ClaimPropertyExpression>().FirstOrDefault();
+            return new ConditionPropertyExpression(
+                source,
+                property
+            );
         }
 
         public static BinaryExpression Binary(TokenValue value)

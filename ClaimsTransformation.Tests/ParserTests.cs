@@ -23,6 +23,26 @@ namespace ClaimsTransformation.Tests
         }
 
         [Test]
+        public void Property()
+        {
+            var input = "type";
+            var reader = new StringReader(input);
+            var result = default(TokenValue);
+            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.Property, out result));
+            Assert.IsTrue(reader.EOF);
+        }
+
+        [Test]
+        public void IdentifierProperty()
+        {
+            var input = "C1.type";
+            var reader = new StringReader(input);
+            var result = default(TokenValue);
+            Assert.IsTrue(this.Parser.TryParse(reader, ClaimsTransformationSyntax.IdentifierProperty, out result));
+            Assert.IsTrue(reader.EOF);
+        }
+
+        [Test]
         public void Comparison()
         {
             var input = "type == \"http://contoso.com/role\"";
@@ -152,7 +172,7 @@ namespace ClaimsTransformation.Tests
                     new[]
                     {
                         new BinaryExpression(
-                            new LiteralExpression("claim"),
+                            new ClaimPropertyExpression("claim"),
                             new LiteralExpression("="),
                             new LiteralExpression("C1")
                         )
@@ -179,12 +199,12 @@ namespace ClaimsTransformation.Tests
                         new[]
                         {
                             new BinaryExpression(
-                                new LiteralExpression("type"),
+                                new ClaimPropertyExpression("type"),
                                 new LiteralExpression("=="),
                                 new LiteralExpression("http://contoso.com/role")
                             ),
                             new BinaryExpression(
-                                new LiteralExpression("value"),
+                                new ClaimPropertyExpression("value"),
                                 new LiteralExpression("=="),
                                 new LiteralExpression("Editor")
                             )
@@ -195,12 +215,12 @@ namespace ClaimsTransformation.Tests
                         new[]
                         {
                             new BinaryExpression(
-                                new LiteralExpression("type"),
+                                new ClaimPropertyExpression("type"),
                                 new LiteralExpression("=="),
                                 new LiteralExpression("http://contoso.com/role")
                             ),
                             new BinaryExpression(
-                                new LiteralExpression("value"),
+                                new ClaimPropertyExpression("value"),
                                 new LiteralExpression("=="),
                                 new LiteralExpression("Manager")
                             )
@@ -212,34 +232,34 @@ namespace ClaimsTransformation.Tests
                     new[]
                     {
                         new BinaryExpression(
-                            new LiteralExpression("type"),
+                            new ClaimPropertyExpression("type"),
                             new LiteralExpression("="),
-                            new PropertyExpression(
+                            new ConditionPropertyExpression(
                                 new LiteralExpression("C1"),
-                                new LiteralExpression("type")
+                                new ClaimPropertyExpression("type")
                             )
                         ),
                         new BinaryExpression(
-                            new LiteralExpression("value"),
+                            new ClaimPropertyExpression("value"),
                             new LiteralExpression("="),
                             new BinaryExpression(
                                 new BinaryExpression(
-                                    new PropertyExpression(
+                                    new ConditionPropertyExpression(
                                         new LiteralExpression("C1"),
-                                        new LiteralExpression("type")
+                                        new ClaimPropertyExpression("type")
                                     ),
                                     new LiteralExpression("+"),
                                     new LiteralExpression(" ")
                                 ),
                                 new LiteralExpression("+"),
-                                new PropertyExpression(
+                                new ConditionPropertyExpression(
                                     new LiteralExpression("C2"),
-                                    new LiteralExpression("type")
+                                    new ClaimPropertyExpression("type")
                                 )
                             )
                         ),
                         new BinaryExpression(
-                            new LiteralExpression("valuetype"),
+                            new ClaimPropertyExpression("valuetype"),
                             new LiteralExpression("="),
                             new LiteralExpression("string")
                         )
@@ -267,15 +287,15 @@ namespace ClaimsTransformation.Tests
                     new[]
                     {
                         new BinaryExpression(
-                            new LiteralExpression("value"),
+                            new ClaimPropertyExpression("value"),
                             new LiteralExpression("="),
                             new CallExpression(
                                 new LiteralExpression("RegExReplace"),
                                 new Expression[]
                                 {
-                                    new PropertyExpression(
+                                    new ConditionPropertyExpression(
                                         new LiteralExpression("C1"),
-                                        new LiteralExpression("value")
+                                        new ClaimPropertyExpression("value")
                                     ),
                                     new LiteralExpression("Cats"),
                                     new LiteralExpression("Dogs")
@@ -302,12 +322,12 @@ namespace ClaimsTransformation.Tests
                         new[]
                         {
                             new BinaryExpression(
-                                new LiteralExpression("type"),
+                                new ClaimPropertyExpression("type"),
                                 new LiteralExpression("=="),
                                 new LiteralExpression("http://contoso.com/role")
                             ),
                             new BinaryExpression(
-                                new LiteralExpression("value"),
+                                new ClaimPropertyExpression("value"),
                                 new LiteralExpression("=="),
                                 new LiteralExpression("Manager")
                             )
@@ -319,7 +339,7 @@ namespace ClaimsTransformation.Tests
                         new[]
                     {
                         new BinaryExpression(
-                            new LiteralExpression("claim"),
+                            new ClaimPropertyExpression("claim"),
                             new LiteralExpression("="),
                             new LiteralExpression("C1")
                         )
@@ -343,12 +363,12 @@ namespace ClaimsTransformation.Tests
                         new[]
                         {
                             new BinaryExpression(
-                                new LiteralExpression("type"),
+                                new ClaimPropertyExpression("type"),
                                 new LiteralExpression("=="),
                                 new LiteralExpression("http://contoso.com/role")
                             ),
                             new BinaryExpression(
-                                new LiteralExpression("value"),
+                                new ClaimPropertyExpression("value"),
                                 new LiteralExpression("=="),
                                 new LiteralExpression("Manager")
                             )
@@ -362,7 +382,7 @@ namespace ClaimsTransformation.Tests
                         new[]
                     {
                         new BinaryExpression(
-                            new LiteralExpression("claim"),
+                            new ClaimPropertyExpression("claim"),
                             new LiteralExpression("="),
                             new LiteralExpression("C1")
                         )

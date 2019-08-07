@@ -46,6 +46,13 @@ namespace ClaimsTransformation.Language.Parser
 
         public Syntax WithFactory(Func<TokenValue, Expression> factory)
         {
+            if (this.Flags.HasFlag(SyntaxFlags.Any) && this.Children != null)
+            {
+                foreach (var child in this.Children)
+                {
+                    child.Factory = factory;
+                }
+            }
             this.Factory = factory;
             return this;
         }

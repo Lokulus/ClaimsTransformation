@@ -2,23 +2,23 @@
 
 namespace ClaimsTransformation.Language.DOM
 {
-    public class PropertyExpression : Expression
+    public class ConditionPropertyExpression : Expression
     {
-        public PropertyExpression(LiteralExpression source, LiteralExpression name)
+        public ConditionPropertyExpression(LiteralExpression source, ClaimPropertyExpression property)
         {
             this.Source = source;
-            this.Name = name;
+            this.Property = property;
         }
 
         public LiteralExpression Source { get; private set; }
 
-        public LiteralExpression Name { get; private set; }
+        public ClaimPropertyExpression Property { get; private set; }
 
         public override ExpressionType Type
         {
             get
             {
-                return ExpressionType.Propery;
+                return ExpressionType.ConditionProperty;
             }
         }
 
@@ -31,9 +31,9 @@ namespace ClaimsTransformation.Language.DOM
                 {
                     hashCode += this.Source.GetHashCode();
                 }
-                if (this.Name != null)
+                if (this.Property != null)
                 {
-                    hashCode += this.Name.GetHashCode();
+                    hashCode += this.Property.GetHashCode();
                 }
             }
             return hashCode;
@@ -47,9 +47,9 @@ namespace ClaimsTransformation.Language.DOM
                 builder.Append(this.Source.ToString());
                 builder.Append("->");
             }
-            if (this.Name != null)
+            if (this.Property != null)
             {
-                builder.Append(this.Name.ToString());
+                builder.Append(this.Property.ToString());
             }
             else
             {
@@ -60,10 +60,10 @@ namespace ClaimsTransformation.Language.DOM
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as PropertyExpression);
+            return this.Equals(obj as ConditionPropertyExpression);
         }
 
-        public virtual bool Equals(PropertyExpression other)
+        public virtual bool Equals(ConditionPropertyExpression other)
         {
             if (other == null)
             {
@@ -77,7 +77,7 @@ namespace ClaimsTransformation.Language.DOM
             {
                 return false;
             }
-            if (!object.Equals(this.Name, other.Name))
+            if (!object.Equals(this.Property, other.Property))
             {
                 return false;
             }
