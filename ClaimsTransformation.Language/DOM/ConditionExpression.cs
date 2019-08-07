@@ -32,6 +32,14 @@ namespace ClaimsTransformation.Language.DOM
             }
         }
 
+        public override bool IsStatic
+        {
+            get
+            {
+                return this.Expressions.All(expression => expression.IsStatic);
+            }
+        }
+
         public override ExpressionType Type
         {
             get

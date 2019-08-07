@@ -9,5 +9,15 @@ namespace ClaimsTransformation.Engine
         {
 
         };
+
+        internal static string GetDefault(string name)
+        {
+            var value = default(string);
+            if (Defaults.TryGetValue(name, out value))
+            {
+                return value;
+            }
+            return default(string);
+        }
     }
 }

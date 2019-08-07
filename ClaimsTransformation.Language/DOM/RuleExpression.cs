@@ -24,6 +24,14 @@ namespace ClaimsTransformation.Language.DOM
 
         public IssueExpression Issue { get; private set; }
 
+        public override bool IsStatic
+        {
+            get
+            {
+                return this.Conditions.All(condition => condition.IsStatic) && this.Issue.IsStatic;
+            }
+        }
+
         public override ExpressionType Type
         {
             get

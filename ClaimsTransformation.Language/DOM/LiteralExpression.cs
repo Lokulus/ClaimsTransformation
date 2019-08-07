@@ -11,6 +11,14 @@ namespace ClaimsTransformation.Language.DOM
 
         public string Value { get; private set; }
 
+        public override bool IsStatic
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override ExpressionType Type
         {
             get
