@@ -1,7 +1,7 @@
 ﻿using ClaimsTransformation.Language.DOM;
 using ClaimsTransformation.Language.Parser;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace ClaimsTransformation.Engine
@@ -32,6 +32,7 @@ namespace ClaimsTransformation.Engine
 
         protected virtual void Transform(IEnumerable<string> rules, IClaimsTransformationContext context)
         {
+            var first = true;
             foreach (var rule in rules)
             {
                 var expression = default(RuleExpression);
@@ -39,6 +40,14 @@ namespace ClaimsTransformation.Engine
                 {
                     expression = this.Parser.Parse(rule);
                     this.Cache.Add(rule, expression);
+                }
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    context.Input = context.Input.Concat(context.Output).ToArray();
                 }
                 this.Transform(expression, context);
             }

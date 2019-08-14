@@ -1,4 +1,5 @@
 ﻿using ClaimsTransformation.Language.DOM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -13,6 +14,21 @@ namespace ClaimsTransformation.Engine
         }
 
         public IDictionary<ConditionExpression, ConditionState> States { get; private set; }
+
+        public ConditionState this[ExpressionVisitor visitor, string identifier]
+        {
+            get
+            {
+                var expression = this.States.Keys.FirstOrDefault(
+                    _expression => string.Equals(
+                        Convert.ToString(visitor.Visit(_expression.Identifier)),
+                        identifier,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
+                return this[expression];
+            }
+        }
 
         public ConditionState this[ConditionExpression expression]
         {
@@ -36,23 +52,19 @@ namespace ClaimsTransformation.Engine
             }
         }
 
+        public IEnumerable<ConditionExpression> Expressions
+        {
+            get
+            {
+                return this.States.Keys;
+            }
+        }
+
         public IEnumerable<Claim> Claims
         {
             get
             {
-                var claims = default(IEnumerable<Claim>);
-                foreach (var state in this.States.Values)
-                {
-                    if (claims == null)
-                    {
-                        claims = state.Claims;
-                    }
-                    else
-                    {
-                        claims = claims.Intersect(state.Claims);
-                    }
-                }
-                return claims;
+                return this.States.Values.SelectMany(state => state.Claims).ToArray();
             }
         }
     }

@@ -19,8 +19,6 @@ namespace ClaimsTransformation.Engine
 
         public Claim Claim { get; private set; }
 
-        public ClaimProperty Property { get; internal set; }
-
         public object Visit(Expression expression)
         {
             switch (expression.Type)
@@ -63,12 +61,54 @@ namespace ClaimsTransformation.Engine
             {
                 return null;
             }
-            return expression.Name;
+            if (this.Claim == null)
+            {
+                return expression.Name;
+            }
+            else if (string.Equals(expression.Name, ClaimProperty.CLAIM, StringComparison.OrdinalIgnoreCase))
+            {
+                return this.Claim;
+            }
+            else if (string.Equals(expression.Name, ClaimProperty.TYPE, StringComparison.OrdinalIgnoreCase))
+            {
+                return this.Claim.Type;
+            }
+            else if (string.Equals(expression.Name, ClaimProperty.VALUE, StringComparison.OrdinalIgnoreCase))
+            {
+                return this.Claim.Value;
+            }
+            else if (string.Equals(expression.Name, ClaimProperty.VALUE_TYPE, StringComparison.OrdinalIgnoreCase))
+            {
+                return this.Claim.ValueType;
+            }
+            else if (string.Equals(expression.Name, ClaimProperty.ISSUER, StringComparison.OrdinalIgnoreCase))
+            {
+                return this.Claim.Issuer;
+            }
+            else if (string.Equals(expression.Name, ClaimProperty.ORIGINAL_ISSUER, StringComparison.OrdinalIgnoreCase))
+            {
+                return this.Claim.OriginalIssuer;
+            }
+            throw new NotImplementedException();
         }
 
         public object Visit(ConditionPropertyExpression expression)
         {
-            throw new NotImplementedException();
+            var result = new List<object>();
+            var source = Convert.ToString(this.Visit(expression.Source));
+            foreach (var claim in this.ConditionStates[this, source].Claims)
+            {
+                try
+                {
+                    this.Claim = claim;
+                    result.Add(this.Visit(expression.Property));
+                }
+                finally
+                {
+                    this.Claim = null;
+                }
+            }
+            return result;
         }
 
         public object Visit(UnaryExpression expression)
@@ -109,6 +149,11 @@ namespace ClaimsTransformation.Engine
                     this.ConditionStates[expression].Claims = claims;
                     this.ConditionStates[expression].IsMatch = true;
                 }
+                else
+                {
+                    this.ConditionStates[expression].Claims = Enumerable.Empty<Claim>();
+                    this.ConditionStates[expression].IsMatch = false;
+                }
             }
             else
             {
@@ -132,12 +177,16 @@ namespace ClaimsTransformation.Engine
                 else
                 {
                     var selector = this.BuildDynamicSelector(expression.Expressions);
-                    foreach (var claim in this.ConditionStates.Claims)
-                    {
-                        claims.Add(selector(claim));
-                    }
+                    claims.AddRange(selector());
                 }
-                this.Context.Output = claims.ToArray();
+                if (this.Context.Output == null)
+                {
+                    this.Context.Output = claims.ToArray();
+                }
+                else
+                {
+                    this.Context.Output = this.Context.Output.Concat(claims).ToArray();
+                }
             }
             return expression;
         }
@@ -206,29 +255,39 @@ namespace ClaimsTransformation.Engine
             };
         }
 
-        protected virtual Func<Claim, Claim> BuildDynamicSelector(BinaryExpression[] expressions)
+        protected virtual Func<IEnumerable<Claim>> BuildDynamicSelector(BinaryExpression[] expressions)
         {
-            return claim =>
+            return () =>
             {
-                try
+                var properties = new List<ClaimProperty>();
+                foreach (var expression in expressions)
                 {
-                    this.Claim = claim;
-                    var properties = new List<ClaimProperty>();
-                    foreach (var expression in expressions)
+                    var property = this.Visit(expression) as ClaimProperty;
+                    if (property == null)
                     {
-                        var property = this.Visit(expression) as ClaimProperty;
-                        if (property == null)
-                        {
-                            throw new NotImplementedException();
-                        }
-                        properties.Add(property);
+                        throw new NotImplementedException();
                     }
-                    return ClaimFactory.Create(properties);
+                    properties.Add(property);
                 }
-                finally
+                var groups = new List<List<ClaimProperty>>();
+                foreach (var property in properties)
                 {
-                    this.Claim = null;
+                    var success = false;
+                    foreach (var group in groups)
+                    {
+                        if (group.Contains(property))
+                        {
+                            break;
+                        }
+                        group.Add(property);
+                        success = true;
+                    }
+                    if (!success)
+                    {
+                        groups.Add(new List<ClaimProperty>() { property });
+                    }
                 }
+                return groups.Select(group => ClaimFactory.Create(group));
             };
         }
     }
