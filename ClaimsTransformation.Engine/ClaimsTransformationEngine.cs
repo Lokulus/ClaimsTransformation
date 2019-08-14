@@ -32,22 +32,17 @@ namespace ClaimsTransformation.Engine
 
         protected virtual void Transform(IEnumerable<string> rules, IClaimsTransformationContext context)
         {
-            var first = true;
             foreach (var rule in rules)
             {
+                if (string.IsNullOrEmpty(rule))
+                {
+                    continue;
+                }
                 var expression = default(RuleExpression);
                 if (!this.Cache.TryGetValue(rule, out expression))
                 {
                     expression = this.Parser.Parse(rule);
                     this.Cache.Add(rule, expression);
-                }
-                if (first)
-                {
-                    first = false;
-                }
-                else
-                {
-                    context.Input = context.Input.Concat(context.Output).ToArray();
                 }
                 this.Transform(expression, context);
             }

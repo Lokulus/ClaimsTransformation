@@ -278,13 +278,17 @@ namespace ClaimsTransformation.Engine
             {
                 var selector = this.BuildSelector(expression.Expressions);
                 var claims = selector();
-                if (this.Context.Output == null)
+                if (string.Equals(issuance, Terminals.ADD, StringComparison.OrdinalIgnoreCase))
                 {
-                    this.Context.Output = claims.ToArray();
+                    this.Context.Add(ClaimStore.Transient, claims);
+                }
+                else if (string.Equals(issuance, Terminals.ISSUE, StringComparison.OrdinalIgnoreCase))
+                {
+                    this.Context.Add(ClaimStore.Permanent, claims);
                 }
                 else
                 {
-                    this.Context.Output = this.Context.Output.Concat(claims).ToArray();
+                    throw new NotImplementedException();
                 }
             }
             return expression;
