@@ -1,4 +1,5 @@
 ﻿using ClaimsTransformation.Language.DOM;
+using ClaimsTransformation.Language.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,8 @@ namespace ClaimsTransformation.Engine
                     return this.Visit(expression as CallExpression);
                 case ExpressionType.Condition:
                     return this.Visit(expression as ConditionExpression);
+                case ExpressionType.AggregateCondition:
+                    return this.Visit(expression as AggregateConditionExpression);
                 case ExpressionType.Issue:
                     return this.Visit(expression as IssueExpression);
                 case ExpressionType.Rule:
@@ -96,7 +99,7 @@ namespace ClaimsTransformation.Engine
         {
             var result = new List<object>();
             var source = Convert.ToString(this.Visit(expression.Source));
-            foreach (var claim in this.ConditionStates[this, source].Claims)
+            foreach (var claim in this.ConditionStates[source].Claims)
             {
                 try
                 {
@@ -132,9 +135,9 @@ namespace ClaimsTransformation.Engine
         public object Visit(ConditionExpression expression)
         {
             var claims = new List<Claim>();
+            var identifier = Convert.ToString(this.Visit(expression.Identifier));
             if (!expression.IsEmpty)
             {
-                var identifier = Convert.ToString(this.Visit(expression.Identifier));
                 var predicate = this.BuildPredicate(expression.Expressions);
                 foreach (var claim in this.Context.Input)
                 {
@@ -146,19 +149,59 @@ namespace ClaimsTransformation.Engine
                 }
                 if (claims.Count > 0)
                 {
-                    this.ConditionStates[expression].Claims = claims;
-                    this.ConditionStates[expression].IsMatch = true;
+                    this.ConditionStates[identifier].Claims = claims;
+                    this.ConditionStates[identifier].IsMatch = true;
                 }
                 else
                 {
-                    this.ConditionStates[expression].Claims = Enumerable.Empty<Claim>();
-                    this.ConditionStates[expression].IsMatch = false;
+                    this.ConditionStates[identifier].Claims = Enumerable.Empty<Claim>();
+                    this.ConditionStates[identifier].IsMatch = false;
                 }
             }
             else
             {
-                this.ConditionStates[expression].Claims = this.Context.Input;
-                this.ConditionStates[expression].IsMatch = true;
+                this.ConditionStates[identifier].Claims = this.Context.Input;
+                this.ConditionStates[identifier].IsMatch = true;
+            }
+            return expression;
+        }
+
+        public object Visit(AggregateConditionExpression expression)
+        {
+            this.Visit((ConditionExpression)expression);
+            var name = Convert.ToString(this.Visit(expression.Name));
+            var identifier = Convert.ToString(this.Visit(expression.Identifier));
+            if (string.Equals(name, Terminals.EXISTS, StringComparison.OrdinalIgnoreCase))
+            {
+                if (this.ConditionStates[identifier].Claims.Any())
+                {
+                    this.ConditionStates[identifier].Claims = this.ConditionStates[identifier].Claims
+                        .Take(1)
+                        .ToArray();
+                    this.ConditionStates[identifier].IsMatch = true;
+                }
+                else
+                {
+                    this.ConditionStates[identifier].Claims = Enumerable.Empty<Claim>();
+                    this.ConditionStates[identifier].IsMatch = false;
+                }
+            }
+            else if (string.Equals(name, Terminals.NOT_EXISTS, StringComparison.OrdinalIgnoreCase))
+            {
+                if (this.ConditionStates[identifier].Claims.Any())
+                {
+                    this.ConditionStates[identifier].Claims = Enumerable.Empty<Claim>();
+                    this.ConditionStates[identifier].IsMatch = false;
+                }
+                else
+                {
+                    this.ConditionStates[identifier].Claims = Enumerable.Empty<Claim>();
+                    this.ConditionStates[identifier].IsMatch = true;
+                }
+            }
+            else if (string.Equals(name, Terminals.COUNT, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new NotImplementedException();
             }
             return expression;
         }
@@ -198,7 +241,7 @@ namespace ClaimsTransformation.Engine
                 this.ConditionStates = new ConditionStates();
                 foreach (var condition in expression.Conditions)
                 {
-                    this.Visit(condition);
+                    this.Visit((Expression)condition);
                 }
                 this.Visit(expression.Issue);
                 return expression;

@@ -1,5 +1,4 @@
-﻿using ClaimsTransformation.Language.DOM;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -10,35 +9,20 @@ namespace ClaimsTransformation.Engine
     {
         public ConditionStates()
         {
-            this.States = new Dictionary<ConditionExpression, ConditionState>();
+            this.States = new Dictionary<string, ConditionState>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public IDictionary<ConditionExpression, ConditionState> States { get; private set; }
+        public IDictionary<string, ConditionState> States { get; private set; }
 
-        public ConditionState this[ExpressionVisitor visitor, string identifier]
-        {
-            get
-            {
-                var expression = this.States.Keys.FirstOrDefault(
-                    _expression => string.Equals(
-                        Convert.ToString(visitor.Visit(_expression.Identifier)),
-                        identifier,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                );
-                return this[expression];
-            }
-        }
-
-        public ConditionState this[ConditionExpression expression]
+        public ConditionState this[string identifier]
         {
             get
             {
                 var state = default(ConditionState);
-                if (!this.States.TryGetValue(expression, out state))
+                if (!this.States.TryGetValue(identifier, out state))
                 {
-                    state = new ConditionState(expression);
-                    this.States.Add(expression, state);
+                    state = new ConditionState(identifier);
+                    this.States.Add(identifier, state);
                 }
                 return state;
             }
@@ -51,32 +35,16 @@ namespace ClaimsTransformation.Engine
                 return this.States.Values.All(state => state.IsMatch);
             }
         }
-
-        public IEnumerable<ConditionExpression> Expressions
-        {
-            get
-            {
-                return this.States.Keys;
-            }
-        }
-
-        public IEnumerable<Claim> Claims
-        {
-            get
-            {
-                return this.States.Values.SelectMany(state => state.Claims).ToArray();
-            }
-        }
     }
 
     internal class ConditionState
     {
-        public ConditionState(ConditionExpression condition)
+        public ConditionState(string identifier)
         {
-            this.Condition = condition;
+            this.Identifier = identifier;
         }
 
-        public ConditionExpression Condition { get; private set; }
+        public string Identifier { get; private set; }
 
         public bool IsMatch { get; set; }
 

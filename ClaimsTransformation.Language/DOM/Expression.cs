@@ -55,6 +55,7 @@ namespace ClaimsTransformation.Language.DOM
         Binary,
         Call,
         Condition,
+        AggregateCondition,
         Issue,
         Rule
     }

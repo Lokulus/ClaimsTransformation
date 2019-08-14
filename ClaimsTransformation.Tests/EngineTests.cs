@@ -109,8 +109,8 @@ namespace ClaimsTransformation.Tests
         public void Scenario004()
         {
             const string EXPRESSION =
-                @"C1:EXISTS[TYPE == ""http://namespace/client"", VALUE == ""Api""] && " +
-                @"C2:NOT EXISTS[TYPE == ""http://namespace/subject"", VALUE == ""Scenario004""] " +
+                @"C1:EXISTS([TYPE == ""http://namespace/client"", VALUE == ""Api""]) && " +
+                @"C2:NOT EXISTS([TYPE == ""http://namespace/subject"", VALUE == ""Scenario004""]) " +
                 @"=> ISSUE(TYPE = ""http://namespace/role"", VALUE = ""Admin"");";
 
             var positive = new List<Claim>();

@@ -24,6 +24,14 @@ namespace ClaimsTransformation.Language.DOM
 
         public LiteralExpression Value { get; private set; }
 
+        public override ExpressionType Type
+        {
+            get
+            {
+                return ExpressionType.AggregateCondition;
+            }
+        }
+
         public override int GetHashCode()
         {
             var hashCode = base.GetHashCode();
