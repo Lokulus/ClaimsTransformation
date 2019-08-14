@@ -25,14 +25,6 @@ namespace ClaimsTransformation.Language.DOM
 
         public Expression[] Arguments { get; private set; }
 
-        public override bool IsStatic
-        {
-            get
-            {
-                return this.Arguments.All(argument => argument.IsStatic);
-            }
-        }
-
         public override ExpressionType Type
         {
             get

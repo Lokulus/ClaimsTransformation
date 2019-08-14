@@ -17,14 +17,6 @@ namespace ClaimsTransformation.Language.DOM
 
         public Expression Right { get; private set; }
 
-        public override bool IsStatic
-        {
-            get
-            {
-                return this.Left.IsStatic && this.Operator.IsStatic && this.Right.IsStatic;
-            }
-        }
-
         public override ExpressionType Type
         {
             get

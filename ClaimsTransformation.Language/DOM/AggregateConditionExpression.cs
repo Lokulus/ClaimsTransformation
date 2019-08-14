@@ -6,12 +6,12 @@ namespace ClaimsTransformation.Language.DOM
 {
     public class AggregateConditionExpression : ConditionExpression
     {
-        public AggregateConditionExpression(LiteralExpression identifier, LiteralExpression name, IEnumerable<BinaryExpression> expressions) : this(identifier, name, expressions, null, null)
+        public AggregateConditionExpression(IdentifierExpression identifier, LiteralExpression name, IEnumerable<BinaryExpression> expressions) : this(identifier, name, expressions, null, null)
         {
 
         }
 
-        public AggregateConditionExpression(LiteralExpression identifier, LiteralExpression name, IEnumerable<BinaryExpression> expressions, LiteralExpression @operator, LiteralExpression value) : base(identifier, expressions)
+        public AggregateConditionExpression(IdentifierExpression identifier, LiteralExpression name, IEnumerable<BinaryExpression> expressions, LiteralExpression @operator, LiteralExpression value) : base(identifier, expressions)
         {
             this.Name = name;
             this.Operator = @operator;

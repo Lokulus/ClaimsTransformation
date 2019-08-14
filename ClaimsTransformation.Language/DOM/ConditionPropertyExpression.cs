@@ -4,23 +4,15 @@ namespace ClaimsTransformation.Language.DOM
 {
     public class ConditionPropertyExpression : Expression
     {
-        public ConditionPropertyExpression(LiteralExpression source, ClaimPropertyExpression property)
+        public ConditionPropertyExpression(IdentifierExpression identifier, ClaimPropertyExpression property)
         {
-            this.Source = source;
+            this.Identifier = identifier;
             this.Property = property;
         }
 
-        public LiteralExpression Source { get; private set; }
+        public IdentifierExpression Identifier { get; private set; }
 
         public ClaimPropertyExpression Property { get; private set; }
-
-        public override bool IsStatic
-        {
-            get
-            {
-                return false;
-            }
-        }
 
         public override ExpressionType Type
         {
@@ -35,9 +27,9 @@ namespace ClaimsTransformation.Language.DOM
             var hashCode = 0;
             unchecked
             {
-                if (this.Source != null)
+                if (this.Identifier != null)
                 {
-                    hashCode += this.Source.GetHashCode();
+                    hashCode += this.Identifier.GetHashCode();
                 }
                 if (this.Property != null)
                 {
@@ -50,9 +42,9 @@ namespace ClaimsTransformation.Language.DOM
         public override string ToString()
         {
             var builder = new StringBuilder();
-            if (this.Source != null)
+            if (this.Identifier != null)
             {
-                builder.Append(this.Source.ToString());
+                builder.Append(this.Identifier.ToString());
                 builder.Append("->");
             }
             if (this.Property != null)
@@ -81,7 +73,7 @@ namespace ClaimsTransformation.Language.DOM
             {
                 return true;
             }
-            if (!object.Equals(this.Source, other.Source))
+            if (!object.Equals(this.Identifier, other.Identifier))
             {
                 return false;
             }

@@ -2,11 +2,57 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace ClaimsTransformation.Engine
 {
     public static class ExpressionEvaluator
     {
+        private static readonly IDictionary<string, Func<ExpressionVisitor, IEnumerable<object>, object>> Functions = new Dictionary<string, Func<ExpressionVisitor, IEnumerable<object>, object>>(StringComparer.OrdinalIgnoreCase)
+        {
+            { Terminals.REGEX_REPLACE, EvaluateRegExReplace }
+        };
+
+        public static object Evaluate(ExpressionVisitor visitor, object name, IEnumerable<object> arguments)
+        {
+            var function = default(Func<ExpressionVisitor, IEnumerable<object>, object>);
+            if (!Functions.TryGetValue(Convert.ToString(name), out function))
+            {
+                throw new NotImplementedException();
+            }
+            return function(visitor, arguments);
+        }
+
+        private static object EvaluateRegExReplace(ExpressionVisitor visitor, IEnumerable<object> arguments)
+        {
+            var result = new List<object>();
+            var args = arguments.ToArray();
+            if (args.Length != 3)
+            {
+                throw new NotImplementedException();
+            }
+            var inputSequence = default(IEnumerable<object>);
+            if (!IsSequence(args[0], out inputSequence))
+            {
+                inputSequence = new[] { args[0] };
+            }
+            var pattern = Convert.ToString(args[1]);
+            var replacement = Convert.ToString(args[2]);
+            foreach (var input in inputSequence)
+            {
+                result.Add(Regex.Replace(Convert.ToString(input), pattern, replacement));
+            }
+            switch (result.Count)
+            {
+                case 0:
+                    return null;
+                case 1:
+                    return result[0];
+                default:
+                    return result;
+            }
+        }
+
         public static object Evaluate(ExpressionVisitor visitor, object left, object @operator, object right)
         {
             var leftSequence = default(IEnumerable<object>);

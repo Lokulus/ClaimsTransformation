@@ -35,6 +35,18 @@ namespace ClaimsTransformation.Engine
                 return this.States.Values.All(state => state.IsMatch);
             }
         }
+
+        public bool TryGetClaims(string identifier, out IEnumerable<Claim> claims)
+        {
+            var state = default(ConditionState);
+            if (!this.States.TryGetValue(identifier, out state))
+            {
+                claims = default(IEnumerable<Claim>);
+                return false;
+            }
+            claims = state.Claims;
+            return true;
+        }
     }
 
     internal class ConditionState

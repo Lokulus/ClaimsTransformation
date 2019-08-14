@@ -2,9 +2,9 @@
 
 namespace ClaimsTransformation.Language.DOM
 {
-    public class LiteralExpression : Expression
+    public class IdentifierExpression : Expression
     {
-        public LiteralExpression(string value)
+        public IdentifierExpression(string value)
         {
             this.Value = value;
         }
@@ -15,7 +15,7 @@ namespace ClaimsTransformation.Language.DOM
         {
             get
             {
-                return ExpressionType.Literal;
+                return ExpressionType.Identifier;
             }
         }
 
@@ -46,10 +46,10 @@ namespace ClaimsTransformation.Language.DOM
 
         public override bool Equals(object obj)
         {
-            return this.Equals(obj as LiteralExpression);
+            return this.Equals(obj as IdentifierExpression);
         }
 
-        public virtual bool Equals(LiteralExpression other)
+        public virtual bool Equals(IdentifierExpression other)
         {
             if (other == null)
             {

@@ -117,7 +117,7 @@
 
             Identifier = new Syntax(
                 new Token(Terminals.IDENTIFIER, TokenChannel.Normal, TokenFlags.Identifier)
-            );
+            ).WithFactory(ExpressionFactory.Identifier);
 
             IdentifierProperty = new Syntax(
                 new[]
@@ -256,9 +256,7 @@
                             new Syntax(
                                 new[]
                                 {
-                                    new Syntax(
-                                        new Token(Terminals.IDENTIFIER, TokenChannel.Normal, TokenFlags.Identifier)
-                                    ),
+                                    Identifier,
                                     new Syntax(
                                         new Token(Terminals.COLON)
                                     ),
@@ -300,9 +298,7 @@
                             new Syntax(
                                 new[]
                                 {
-                                    new Syntax(
-                                        new Token(Terminals.IDENTIFIER, TokenChannel.Normal, TokenFlags.Identifier)
-                                    ),
+                                    Identifier,
                                     new Syntax(
                                         new Token(Terminals.COLON)
                                     ),

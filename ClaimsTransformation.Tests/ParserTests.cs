@@ -163,7 +163,7 @@ namespace ClaimsTransformation.Tests
                 new[]
                 {
                     new ConditionExpression(
-                        new LiteralExpression("C1"),
+                        new IdentifierExpression("C1"),
                         Enumerable.Empty<BinaryExpression>()
                     )
                 },
@@ -174,7 +174,7 @@ namespace ClaimsTransformation.Tests
                         new BinaryExpression(
                             new ClaimPropertyExpression("claim"),
                             new LiteralExpression("="),
-                            new LiteralExpression("C1")
+                            new IdentifierExpression("C1")
                         )
                     }
                 )
@@ -195,7 +195,7 @@ namespace ClaimsTransformation.Tests
                 new[]
                 {
                     new ConditionExpression(
-                        new LiteralExpression("C1"),
+                        new IdentifierExpression("C1"),
                         new[]
                         {
                             new BinaryExpression(
@@ -211,7 +211,7 @@ namespace ClaimsTransformation.Tests
                         }
                     ),
                     new ConditionExpression(
-                        new LiteralExpression("C2"),
+                        new IdentifierExpression("C2"),
                         new[]
                         {
                             new BinaryExpression(
@@ -235,7 +235,7 @@ namespace ClaimsTransformation.Tests
                             new ClaimPropertyExpression("type"),
                             new LiteralExpression("="),
                             new ConditionPropertyExpression(
-                                new LiteralExpression("C1"),
+                                new IdentifierExpression("C1"),
                                 new ClaimPropertyExpression("type")
                             )
                         ),
@@ -245,7 +245,7 @@ namespace ClaimsTransformation.Tests
                             new BinaryExpression(
                                 new BinaryExpression(
                                     new ConditionPropertyExpression(
-                                        new LiteralExpression("C1"),
+                                        new IdentifierExpression("C1"),
                                         new ClaimPropertyExpression("type")
                                     ),
                                     new LiteralExpression("+"),
@@ -253,7 +253,7 @@ namespace ClaimsTransformation.Tests
                                 ),
                                 new LiteralExpression("+"),
                                 new ConditionPropertyExpression(
-                                    new LiteralExpression("C2"),
+                                    new IdentifierExpression("C2"),
                                     new ClaimPropertyExpression("type")
                                 )
                             )
@@ -278,7 +278,7 @@ namespace ClaimsTransformation.Tests
                 new[]
                 {
                     new ConditionExpression(
-                        new LiteralExpression("C1"),
+                        new IdentifierExpression("C1"),
                         Enumerable.Empty<BinaryExpression>()
                     )
                 },
@@ -294,7 +294,7 @@ namespace ClaimsTransformation.Tests
                                 new Expression[]
                                 {
                                     new ConditionPropertyExpression(
-                                        new LiteralExpression("C1"),
+                                        new IdentifierExpression("C1"),
                                         new ClaimPropertyExpression("value")
                                     ),
                                     new LiteralExpression("Cats"),
@@ -317,7 +317,7 @@ namespace ClaimsTransformation.Tests
                 new[]
                 {
                     new AggregateConditionExpression(
-                        new LiteralExpression("C1"),
+                        new IdentifierExpression("C1"),
                         new LiteralExpression("EXISTS"),
                         new[]
                         {
@@ -341,7 +341,7 @@ namespace ClaimsTransformation.Tests
                         new BinaryExpression(
                             new ClaimPropertyExpression("claim"),
                             new LiteralExpression("="),
-                            new LiteralExpression("C1")
+                            new IdentifierExpression("C1")
                         )
                     }
                 )
@@ -358,7 +358,7 @@ namespace ClaimsTransformation.Tests
                 new[]
                 {
                     new AggregateConditionExpression(
-                        new LiteralExpression("C1"),
+                        new IdentifierExpression("C1"),
                         new LiteralExpression("COUNT"),
                         new[]
                         {
@@ -384,7 +384,7 @@ namespace ClaimsTransformation.Tests
                         new BinaryExpression(
                             new ClaimPropertyExpression("claim"),
                             new LiteralExpression("="),
-                            new LiteralExpression("C1")
+                            new IdentifierExpression("C1")
                         )
                     }
                 )

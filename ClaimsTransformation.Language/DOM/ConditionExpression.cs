@@ -7,7 +7,7 @@ namespace ClaimsTransformation.Language.DOM
 {
     public class ConditionExpression : Expression
     {
-        public ConditionExpression(LiteralExpression identifier, IEnumerable<BinaryExpression> expressions)
+        public ConditionExpression(IdentifierExpression identifier, IEnumerable<BinaryExpression> expressions)
         {
             this.Identifier = identifier;
             if (expressions != null)
@@ -20,7 +20,7 @@ namespace ClaimsTransformation.Language.DOM
             }
         }
 
-        public LiteralExpression Identifier { get; private set; }
+        public IdentifierExpression Identifier { get; private set; }
 
         public BinaryExpression[] Expressions { get; private set; }
 
@@ -29,14 +29,6 @@ namespace ClaimsTransformation.Language.DOM
             get
             {
                 return this.Expressions.Length == 0;
-            }
-        }
-
-        public override bool IsStatic
-        {
-            get
-            {
-                return this.Expressions.All(expression => expression.IsStatic);
             }
         }
 

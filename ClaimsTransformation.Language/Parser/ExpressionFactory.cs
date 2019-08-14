@@ -12,6 +12,11 @@ namespace ClaimsTransformation.Language.Parser
             return new LiteralExpression(value.Value);
         }
 
+        public static IdentifierExpression Identifier(TokenValue value)
+        {
+            return new IdentifierExpression(value.Value);
+        }
+
         public static ClaimPropertyExpression ClaimProperty(TokenValue value)
         {
             return new ClaimPropertyExpression(value.Value);
@@ -20,10 +25,10 @@ namespace ClaimsTransformation.Language.Parser
         public static ConditionPropertyExpression ConditionProperty(TokenValue value)
         {
             var args = Expressions(value.Children);
-            var source = args.OfType<LiteralExpression>().FirstOrDefault();
+            var identifier = args.OfType<IdentifierExpression>().FirstOrDefault();
             var property = args.OfType<ClaimPropertyExpression>().FirstOrDefault();
             return new ConditionPropertyExpression(
-                source,
+                identifier,
                 property
             );
         }
@@ -83,7 +88,7 @@ namespace ClaimsTransformation.Language.Parser
         public static ConditionExpression Condition(TokenValue value)
         {
             var args = Expressions(value.Children);
-            var identifier = args.OfType<LiteralExpression>().FirstOrDefault();
+            var identifier = args.OfType<IdentifierExpression>().FirstOrDefault();
             var expressions = args.OfType<BinaryExpression>();
             return new ConditionExpression(identifier, expressions);
         }
@@ -91,14 +96,15 @@ namespace ClaimsTransformation.Language.Parser
         public static AggregateConditionExpression AggregateCondition(TokenValue value)
         {
             var args = Expressions(value.Children);
+            var identifier = args.OfType<IdentifierExpression>().FirstOrDefault();
             var literals = args.OfType<LiteralExpression>().ToArray();
             var expressions = args.OfType<BinaryExpression>();
             switch (literals.Length)
             {
-                case 2:
-                    return new AggregateConditionExpression(literals[0], literals[1], expressions);
-                case 4:
-                    return new AggregateConditionExpression(literals[0], literals[1], expressions, literals[2], literals[3]);
+                case 1:
+                    return new AggregateConditionExpression(identifier, literals[0], expressions);
+                case 3:
+                    return new AggregateConditionExpression(identifier, literals[0], expressions, literals[1], literals[2]);
             }
             throw new NotImplementedException();
         }

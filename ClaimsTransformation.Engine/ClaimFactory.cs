@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Linq;
 
 namespace ClaimsTransformation.Engine
 {
@@ -50,6 +51,22 @@ namespace ClaimsTransformation.Engine
                 }
             }
             return new Claim(type, value, valueType, issuer, originalIssuer);
+        }
+
+        public static IEnumerable<Claim> Create(IEnumerable<Claim> claims)
+        {
+            return claims.Select(claim => Create(claim)).ToArray();
+        }
+
+        public static Claim Create(Claim claim)
+        {
+            var properties = new[]
+            {
+                new ClaimProperty(ClaimProperty.TYPE, claim.Type),
+                new ClaimProperty(ClaimProperty.VALUE, claim.Value),
+                new ClaimProperty(ClaimProperty.VALUE_TYPE,claim.ValueType)
+            };
+            return Create(properties);
         }
     }
 }

@@ -4,8 +4,6 @@ namespace ClaimsTransformation.Language.DOM
 {
     public abstract class Expression
     {
-        public abstract bool IsStatic { get; }
-
         public abstract ExpressionType Type { get; }
 
         public override int GetHashCode()
@@ -49,6 +47,7 @@ namespace ClaimsTransformation.Language.DOM
     public enum ExpressionType
     {
         Literal,
+        Identifier,
         ClaimPropery,
         ConditionProperty,
         Unary,

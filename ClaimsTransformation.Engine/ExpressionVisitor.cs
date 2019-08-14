@@ -21,12 +21,19 @@ namespace ClaimsTransformation.Engine
 
         public Claim Claim { get; private set; }
 
+        public IEnumerable<object> Visit(IEnumerable<Expression> expressions)
+        {
+            return expressions.Select(expression => this.Visit(expression)).ToArray();
+        }
+
         public object Visit(Expression expression)
         {
             switch (expression.Type)
             {
                 case ExpressionType.Literal:
                     return this.Visit(expression as LiteralExpression);
+                case ExpressionType.Identifier:
+                    return this.Visit(expression as IdentifierExpression);
                 case ExpressionType.ClaimPropery:
                     return this.Visit(expression as ClaimPropertyExpression);
                 case ExpressionType.ConditionProperty:
@@ -55,6 +62,20 @@ namespace ClaimsTransformation.Engine
             if (expression == null)
             {
                 return null;
+            }
+            return expression.Value;
+        }
+
+        public object Visit(IdentifierExpression expression)
+        {
+            if (expression == null)
+            {
+                return null;
+            }
+            var claims = default(IEnumerable<Claim>);
+            if (this.ConditionStates.TryGetClaims(expression.Value, out claims))
+            {
+                return ClaimFactory.Create(claims);
             }
             return expression.Value;
         }
@@ -99,8 +120,8 @@ namespace ClaimsTransformation.Engine
         public object Visit(ConditionPropertyExpression expression)
         {
             var result = new List<object>();
-            var source = Convert.ToString(this.Visit(expression.Source));
-            foreach (var claim in this.ConditionStates[source].Claims)
+            var identifier = expression.Identifier.Value;
+            foreach (var claim in this.ConditionStates[identifier].Claims)
             {
                 try
                 {
@@ -112,7 +133,15 @@ namespace ClaimsTransformation.Engine
                     this.Claim = null;
                 }
             }
-            return result;
+            switch (result.Count)
+            {
+                case 0:
+                    return null;
+                case 1:
+                    return result[0];
+                default:
+                    return result;
+            }
         }
 
         public object Visit(UnaryExpression expression)
@@ -130,13 +159,23 @@ namespace ClaimsTransformation.Engine
 
         public object Visit(CallExpression expression)
         {
-            throw new NotImplementedException();
+            var name = this.Visit(expression.Name);
+            var arguments = this.Visit(expression.Arguments);
+            return ExpressionEvaluator.Evaluate(this, name, arguments);
         }
 
         public object Visit(ConditionExpression expression)
         {
             var claims = new List<Claim>();
-            var identifier = Convert.ToString(this.Visit(expression.Identifier));
+            var identifier = default(string);
+            if (expression.Identifier != null)
+            {
+                identifier = expression.Identifier.Value;
+            }
+            else
+            {
+                identifier = string.Empty;
+            }
             if (!expression.IsEmpty)
             {
                 var predicate = this.BuildPredicate(expression.Expressions);
@@ -170,8 +209,16 @@ namespace ClaimsTransformation.Engine
         public object Visit(AggregateConditionExpression expression)
         {
             this.Visit((ConditionExpression)expression);
-            var name = Convert.ToString(this.Visit(expression.Name));
-            var identifier = Convert.ToString(this.Visit(expression.Identifier));
+            var name = expression.Name.Value;
+            var identifier = default(string);
+            if (expression.Identifier != null)
+            {
+                identifier = expression.Identifier.Value;
+            }
+            else
+            {
+                identifier = string.Empty;
+            }
             if (string.Equals(name, Terminals.EXISTS, StringComparison.OrdinalIgnoreCase))
             {
                 if (this.ConditionStates[identifier].Claims.Any())
@@ -202,8 +249,8 @@ namespace ClaimsTransformation.Engine
             }
             else if (string.Equals(name, Terminals.COUNT, StringComparison.OrdinalIgnoreCase))
             {
-                var @operator = Convert.ToString(this.Visit(expression.Operator));
-                var value = Convert.ToString(this.Visit(expression.Value));
+                var @operator = expression.Operator.Value;
+                var value = expression.Value.Value;
                 var result = Convert.ToBoolean(
                     ExpressionEvaluator.Evaluate(
                         this,
@@ -226,20 +273,11 @@ namespace ClaimsTransformation.Engine
 
         public object Visit(IssueExpression expression)
         {
-            var issuance = Convert.ToString(this.Visit(expression.Issuance));
+            var issuance = expression.Issuance.Value;
             if (this.ConditionStates.IsMatch)
             {
-                var claims = new List<Claim>();
-                if (this.IsStaticSelector(expression.Expressions))
-                {
-                    var selector = this.BuildStaticSelector(expression.Expressions);
-                    claims.Add(selector());
-                }
-                else
-                {
-                    var selector = this.BuildDynamicSelector(expression.Expressions);
-                    claims.AddRange(selector());
-                }
+                var selector = this.BuildSelector(expression.Expressions);
+                var claims = selector();
                 if (this.Context.Output == null)
                 {
                     this.Context.Output = claims.ToArray();
@@ -293,30 +331,7 @@ namespace ClaimsTransformation.Engine
             };
         }
 
-        protected virtual bool IsStaticSelector(BinaryExpression[] expressions)
-        {
-            return expressions.All(expression => expression.IsStatic);
-        }
-
-        protected virtual Func<Claim> BuildStaticSelector(BinaryExpression[] expressions)
-        {
-            return () =>
-            {
-                var properties = new List<ClaimProperty>();
-                foreach (var expression in expressions)
-                {
-                    var property = this.Visit(expression) as ClaimProperty;
-                    if (property == null)
-                    {
-                        throw new NotImplementedException();
-                    }
-                    properties.Add(property);
-                }
-                return ClaimFactory.Create(properties);
-            };
-        }
-
-        protected virtual Func<IEnumerable<Claim>> BuildDynamicSelector(BinaryExpression[] expressions)
+        protected virtual Func<IEnumerable<Claim>> BuildSelector(BinaryExpression[] expressions)
         {
             return () =>
             {
