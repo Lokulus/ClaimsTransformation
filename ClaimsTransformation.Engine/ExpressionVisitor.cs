@@ -1,6 +1,7 @@
 ﻿using ClaimsTransformation.Language.DOM;
 using ClaimsTransformation.Language.Parser;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -201,7 +202,24 @@ namespace ClaimsTransformation.Engine
             }
             else if (string.Equals(name, Terminals.COUNT, StringComparison.OrdinalIgnoreCase))
             {
-                throw new NotImplementedException();
+                var @operator = Convert.ToString(this.Visit(expression.Operator));
+                var value = Convert.ToString(this.Visit(expression.Value));
+                var result = Convert.ToBoolean(
+                    ExpressionEvaluator.Evaluate(
+                        this,
+                        this.ConditionStates[identifier].Claims.Count(),
+                        @operator,
+                        value
+                    )
+                );
+                if (result)
+                {
+                    this.ConditionStates[identifier].IsMatch = true;
+                }
+                else
+                {
+                    this.ConditionStates[identifier].IsMatch = false;
+                }
             }
             return expression;
         }
@@ -305,32 +323,21 @@ namespace ClaimsTransformation.Engine
                 var properties = new List<ClaimProperty>();
                 foreach (var expression in expressions)
                 {
-                    var property = this.Visit(expression) as ClaimProperty;
-                    if (property == null)
+                    var result = this.Visit(expression);
+                    if (result is ClaimProperty)
+                    {
+                        properties.Add(result as ClaimProperty);
+                    }
+                    else if (result is IEnumerable)
+                    {
+                        properties.AddRange((result as IEnumerable).OfType<ClaimProperty>());
+                    }
+                    else
                     {
                         throw new NotImplementedException();
                     }
-                    properties.Add(property);
                 }
-                var groups = new List<List<ClaimProperty>>();
-                foreach (var property in properties)
-                {
-                    var success = false;
-                    foreach (var group in groups)
-                    {
-                        if (group.Contains(property))
-                        {
-                            break;
-                        }
-                        group.Add(property);
-                        success = true;
-                    }
-                    if (!success)
-                    {
-                        groups.Add(new List<ClaimProperty>() { property });
-                    }
-                }
-                return groups.Select(group => ClaimFactory.Create(group));
+                return ClaimProperty.Productize(properties).Select(group => ClaimFactory.Create(group));
             };
         }
     }

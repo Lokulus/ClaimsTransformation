@@ -1,6 +1,7 @@
 ﻿using ClaimsTransformation.Language.Parser;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace ClaimsTransformation.Engine
 {
@@ -35,6 +36,27 @@ namespace ClaimsTransformation.Engine
                             break;
                         case Terminals.EQ:
                             result.Add(EvaluateEquals(visitor, left, right));
+                            break;
+                        case Terminals.NEQ:
+                            result.Add(EvaluateNotEquals(visitor, left, right));
+                            break;
+                        case Terminals.LESS:
+                            result.Add(EvaluateLess(visitor, left, right));
+                            break;
+                        case Terminals.LESS_EQUAL:
+                            result.Add(EvaluateLessOrEqual(visitor, left, right));
+                            break;
+                        case Terminals.GREATER:
+                            result.Add(EvaluateGreater(visitor, left, right));
+                            break;
+                        case Terminals.GREATER_EQUAL:
+                            result.Add(EvaluateGreaterOrEqual(visitor, left, right));
+                            break;
+                        case Terminals.REGEXP_MATCH:
+                            result.Add(EvaluateMatch(visitor, left, right));
+                            break;
+                        case Terminals.REGEXP_NOT_MATCH:
+                            result.Add(EvaluateNotMatch(visitor, left, right));
                             break;
                         case Terminals.CONCAT:
                             result.Add(EvaluateConcat(visitor, left, right));
@@ -71,6 +93,53 @@ namespace ClaimsTransformation.Engine
                 Convert.ToString(right),
                 StringComparison.OrdinalIgnoreCase
             );
+        }
+
+        private static object EvaluateNotEquals(ExpressionVisitor visitor, object left, object right)
+        {
+            return !string.Equals(
+                Convert.ToString(left),
+                Convert.ToString(right),
+                StringComparison.OrdinalIgnoreCase
+            );
+        }
+
+        private static object EvaluateLess(ExpressionVisitor visitor, object left, object right)
+        {
+            return Convert.ToInt32(left) < Convert.ToInt32(right);
+        }
+
+        private static object EvaluateLessOrEqual(ExpressionVisitor visitor, object left, object right)
+        {
+            return Convert.ToInt32(left) <= Convert.ToInt32(right);
+        }
+
+        private static object EvaluateGreater(ExpressionVisitor visitor, object left, object right)
+        {
+            return Convert.ToInt32(left) > Convert.ToInt32(right);
+        }
+
+        private static object EvaluateGreaterOrEqual(ExpressionVisitor visitor, object left, object right)
+        {
+            return Convert.ToInt32(left) >= Convert.ToInt32(right);
+        }
+
+        private static object EvaluateMatch(ExpressionVisitor visitor, object left, object right)
+        {
+            return Regex.Match(
+                Convert.ToString(left),
+                Convert.ToString(right),
+                RegexOptions.Compiled | RegexOptions.IgnoreCase
+            ).Success;
+        }
+
+        private static object EvaluateNotMatch(ExpressionVisitor visitor, object left, object right)
+        {
+            return !Regex.Match(
+                Convert.ToString(left),
+                Convert.ToString(right),
+                RegexOptions.Compiled | RegexOptions.IgnoreCase
+            ).Success;
         }
 
         private static object EvaluateConcat(ExpressionVisitor visitor, object left, object right)
