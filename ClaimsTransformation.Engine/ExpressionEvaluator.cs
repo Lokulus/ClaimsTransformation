@@ -1,8 +1,8 @@
 ﻿using ClaimsTransformation.Language.Parser;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace ClaimsTransformation.Engine
 {
@@ -40,7 +40,14 @@ namespace ClaimsTransformation.Engine
             var replacement = Convert.ToString(args[2]);
             foreach (var input in inputSequence)
             {
-                result.Add(Regex.Replace(Convert.ToString(input), pattern, replacement));
+                result.Add(
+                    Regex.Replace(
+                        Convert.ToString(input),
+                        pattern,
+                        replacement,
+                        RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture
+                    )
+                );
             }
             switch (result.Count)
             {

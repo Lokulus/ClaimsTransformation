@@ -426,7 +426,16 @@
             Rule = new Syntax(
                 new[]
                 {
-                    Conditions,
+                    new Syntax(
+                        new[]
+                        {
+                            Conditions,
+                            new Syntax(
+                                new Token(Terminals.EMPTY)
+                            )
+                        },
+                        SyntaxFlags.Any
+                    ),
                     new Syntax(
                         new Token(Terminals.IMPLY)
                     ),
