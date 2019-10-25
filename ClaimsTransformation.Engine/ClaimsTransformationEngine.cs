@@ -1,22 +1,24 @@
 ﻿using ClaimsTransformation.Language.DOM;
 using ClaimsTransformation.Language.Parser;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 
 namespace ClaimsTransformation.Engine
 {
     public class ClaimsTransformationEngine : IClaimsTransformationEngine
     {
-        public ClaimsTransformationEngine(IClaimsTransformationParser parser, IClaimsTransformationCache cache)
+        public ClaimsTransformationEngine(IClaimsTransformationParser parser, IClaimsTransformationCache cache, IClaimFactory claimFactory)
         {
             this.Parser = parser;
             this.Cache = cache;
+            this.ClaimFactory = claimFactory;
         }
 
         public IClaimsTransformationParser Parser { get; private set; }
 
         public IClaimsTransformationCache Cache { get; private set; }
+
+        public IClaimFactory ClaimFactory { get; private set; }
 
         public IEnumerable<Claim> Transform(string rule, IEnumerable<Claim> claims)
         {
@@ -25,7 +27,7 @@ namespace ClaimsTransformation.Engine
 
         public IEnumerable<Claim> Transform(IEnumerable<string> rules, IEnumerable<Claim> claims)
         {
-            var context = new ClaimsTransformationContext(claims);
+            var context = new ClaimsTransformationContext(this.ClaimFactory, claims);
             this.Transform(rules, context);
             return context.Output;
         }

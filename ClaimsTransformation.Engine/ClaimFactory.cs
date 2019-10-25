@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Linq;
+using System.Security.Claims;
 
 namespace ClaimsTransformation.Engine
 {
-    public static class ClaimFactory
+    public class ClaimFactory : IClaimFactory
     {
-        public static Claim Create(IEnumerable<ClaimProperty> properties)
+        public virtual Claim Create(IEnumerable<ClaimProperty> properties)
         {
             var type = ClaimsTransformationSettings.GetDefault(ClaimProperty.TYPE);
             var value = ClaimsTransformationSettings.GetDefault(ClaimProperty.VALUE);
@@ -53,12 +53,12 @@ namespace ClaimsTransformation.Engine
             return new Claim(type, value, valueType, issuer, originalIssuer);
         }
 
-        public static IEnumerable<Claim> Create(IEnumerable<Claim> claims)
+        public virtual IEnumerable<Claim> Create(IEnumerable<Claim> claims)
         {
-            return claims.Select(claim => Create(claim)).ToArray();
+            return claims.Select(claim => this.Create(claim)).ToArray();
         }
 
-        public static Claim Create(Claim claim)
+        public virtual Claim Create(Claim claim)
         {
             var properties = new[]
             {
@@ -66,7 +66,7 @@ namespace ClaimsTransformation.Engine
                 new ClaimProperty(ClaimProperty.VALUE, claim.Value),
                 new ClaimProperty(ClaimProperty.VALUE_TYPE,claim.ValueType)
             };
-            return Create(properties);
+            return this.Create(properties);
         }
     }
 }

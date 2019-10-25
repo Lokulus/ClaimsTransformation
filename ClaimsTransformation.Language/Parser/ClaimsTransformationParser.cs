@@ -1,6 +1,5 @@
 ﻿using ClaimsTransformation.Language.DOM;
 using System;
-using System.Collections.Generic;
 
 namespace ClaimsTransformation.Language.Parser
 {

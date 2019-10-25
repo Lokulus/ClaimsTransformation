@@ -75,7 +75,7 @@ namespace ClaimsTransformation.Engine
             var claims = default(IEnumerable<Claim>);
             if (this.ConditionStates.TryGetClaims(expression.Value, out claims))
             {
-                return ClaimFactory.Create(claims);
+                return this.Context.ClaimFactory.Create(claims);
             }
             return expression.Value;
         }
@@ -356,7 +356,7 @@ namespace ClaimsTransformation.Engine
                         throw new NotImplementedException();
                     }
                 }
-                return ClaimProperty.Productize(properties).Select(group => ClaimFactory.Create(group));
+                return ClaimProperty.Productize(properties).Select(group => this.Context.ClaimFactory.Create(group));
             };
         }
     }

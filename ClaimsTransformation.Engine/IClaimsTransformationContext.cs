@@ -5,6 +5,8 @@ namespace ClaimsTransformation.Engine
 {
     public interface IClaimsTransformationContext
     {
+        IClaimFactory ClaimFactory { get; }
+
         IEnumerable<Claim> Input { get; }
 
         IEnumerable<Claim> Output { get; }

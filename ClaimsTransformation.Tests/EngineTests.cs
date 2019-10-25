@@ -18,13 +18,16 @@ namespace ClaimsTransformation.Tests
 
         public ClaimsTransformationEngine Engine { get; private set; }
 
+        public ClaimFactory ClaimFactory { get; private set; }
+
         [SetUp]
         public void SetUp()
         {
             this.Utility = new Utility();
             this.Parser = new ClaimsTransformationParser();
             this.Cache = new ClaimsTransformationCache();
-            this.Engine = new ClaimsTransformationEngine(this.Parser, this.Cache);
+            this.ClaimFactory = new ClaimFactory();
+            this.Engine = new ClaimsTransformationEngine(this.Parser, this.Cache, this.ClaimFactory);
         }
 
         [TearDown]
