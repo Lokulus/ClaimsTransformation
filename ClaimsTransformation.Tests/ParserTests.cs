@@ -1,4 +1,5 @@
-﻿using ClaimsTransformation.Language.DOM;
+﻿using ClaimsTransformation.Language;
+using ClaimsTransformation.Language.DOM;
 using ClaimsTransformation.Language.Parser;
 using NUnit.Framework;
 using System.Linq;
@@ -391,6 +392,21 @@ namespace ClaimsTransformation.Tests
             );
             var actual = this.Parser.Parse(input);
             Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void Error001()
+        {
+            var input = "C1: [asd] => ISSUE(claim = C1);";
+            try
+            {
+                var actual = this.Parser.Parse(input);
+                Assert.Fail("Expected error.");
+            }
+            catch (ClaimsTransformationException e)
+            {
+                Assert.AreEqual("Expression of type \"IdentifierExpression\" was not handled: asd", e.Message);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace ClaimsTransformation.Language.Parser
@@ -20,6 +21,8 @@ namespace ClaimsTransformation.Language.Parser
         public string Value { get; private set; }
 
         public int Position { get; private set; }
+
+        public int Max { get; private set; }
 
         public bool EOF
         {
@@ -76,6 +79,10 @@ namespace ClaimsTransformation.Language.Parser
         public void Rollback()
         {
             this.Position = this.Markers.Pop();
+            if (this.Position > this.Max)
+            {
+                this.Max = this.Position;
+            }
         }
 
         public override string ToString()

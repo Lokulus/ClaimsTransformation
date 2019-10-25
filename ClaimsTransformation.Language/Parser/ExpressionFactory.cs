@@ -25,8 +25,9 @@ namespace ClaimsTransformation.Language.Parser
         public static ConditionPropertyExpression ConditionProperty(TokenValue value)
         {
             var args = Expressions(value.Children);
-            var identifier = args.OfType<IdentifierExpression>().FirstOrDefault();
-            var property = args.OfType<ClaimPropertyExpression>().FirstOrDefault();
+            var identifier = Ensure<IdentifierExpression>(args.OfType<IdentifierExpression>().FirstOrDefault());
+            var property = Ensure<ClaimPropertyExpression>(args.OfType<ClaimPropertyExpression>().FirstOrDefault());
+            Validate(value, args, identifier, property);
             return new ConditionPropertyExpression(
                 identifier,
                 property
@@ -45,13 +46,13 @@ namespace ClaimsTransformation.Language.Parser
                     {
                         result = new BinaryExpression(
                             args.Dequeue(),
-                            args.Dequeue() as LiteralExpression,
+                            Ensure<LiteralExpression>(args.Dequeue()),
                             args.Dequeue()
                         );
                     }
                     else
                     {
-                        throw new NotImplementedException();
+                        throw new ExpressionFactoryException(string.Format("Failed to create binary expression: Expected 3 expressions but found {0}.", args.Count));
                     }
                 }
                 else
@@ -63,14 +64,14 @@ namespace ClaimsTransformation.Language.Parser
                             result.Operator,
                             new BinaryExpression(
                                 result.Right,
-                                args.Dequeue() as LiteralExpression,
+                                Ensure<LiteralExpression>(args.Dequeue()),
                                 args.Dequeue()
                             )
                         );
                     }
                     else
                     {
-                        throw new NotImplementedException();
+                        throw new ExpressionFactoryException(string.Format("Failed to combine binary expression: Expected 2 expressions but found {0}.", args.Count));
                     }
                 }
             }
@@ -80,7 +81,7 @@ namespace ClaimsTransformation.Language.Parser
         public static CallExpression Call(TokenValue value)
         {
             var args = Expressions(value.Children);
-            var name = args.OfType<LiteralExpression>().FirstOrDefault();
+            var name = Ensure<LiteralExpression>(args.OfType<LiteralExpression>().FirstOrDefault());
             var arguments = args.Except(new[] { name });
             return new CallExpression(name, arguments);
         }
@@ -90,6 +91,7 @@ namespace ClaimsTransformation.Language.Parser
             var args = Expressions(value.Children);
             var identifier = args.OfType<IdentifierExpression>().FirstOrDefault();
             var expressions = args.OfType<BinaryExpression>();
+            Validate(value, args, new Expression[] { identifier }.Concat(expressions));
             return new ConditionExpression(identifier, expressions);
         }
 
@@ -99,6 +101,7 @@ namespace ClaimsTransformation.Language.Parser
             var identifier = args.OfType<IdentifierExpression>().FirstOrDefault();
             var literals = args.OfType<LiteralExpression>().ToArray();
             var expressions = args.OfType<BinaryExpression>();
+            Validate(value, args, new Expression[] { identifier }.Concat(literals).Concat(expressions));
             switch (literals.Length)
             {
                 case 1:
@@ -106,14 +109,15 @@ namespace ClaimsTransformation.Language.Parser
                 case 3:
                     return new AggregateConditionExpression(identifier, literals[0], expressions, literals[1], literals[2]);
             }
-            throw new NotImplementedException();
+            throw new ExpressionFactoryException(string.Format("Failed to create aggregate condition expression: Expected 1 or 3 literals but found {0}.", literals.Length));
         }
 
         public static IssueExpression Issue(TokenValue value)
         {
             var args = Expressions(value.Children);
-            var issuance = args.OfType<LiteralExpression>().FirstOrDefault();
+            var issuance = Ensure<LiteralExpression>(args.OfType<LiteralExpression>().FirstOrDefault());
             var expressions = args.OfType<BinaryExpression>();
+            Validate(value, args, new Expression[] { issuance }.Concat(expressions));
             return new IssueExpression(issuance, expressions);
         }
 
@@ -121,7 +125,8 @@ namespace ClaimsTransformation.Language.Parser
         {
             var args = Expressions(value.Children);
             var conditions = args.OfType<ConditionExpression>();
-            var issue = args.OfType<IssueExpression>().FirstOrDefault();
+            var issue = Ensure<IssueExpression>(args.OfType<IssueExpression>().FirstOrDefault());
+            Validate(value, args, new Expression[] { issue }.Concat(conditions));
             return new RuleExpression(conditions, issue);
         }
 
@@ -140,6 +145,45 @@ namespace ClaimsTransformation.Language.Parser
                 }
             }
             return expressions.ToArray();
+        }
+
+        private static T Ensure<T>(Expression expression) where T : Expression
+        {
+            var result = expression as T;
+            if (result == null)
+            {
+                throw new ExpressionFactoryException(
+                    string.Format(
+                        "Expected expression of type \"{0}\" but found \"{1}\": {2}",
+                        typeof(T).Name,
+                        expression != null ? expression.GetType().Name : "None",
+                        expression != null ? expression.ToString() : "None"
+                    )
+                );
+            }
+            return result;
+        }
+
+        private static void Validate(TokenValue value, IEnumerable<Expression> expected, params Expression[] actual)
+        {
+            Validate(value, expected, actual.AsEnumerable());
+        }
+
+        private static void Validate(TokenValue value, IEnumerable<Expression> expected, IEnumerable<Expression> actual)
+        {
+            foreach (var expression in expected)
+            {
+                if (!actual.Contains(expression))
+                {
+                    throw new ExpressionFactoryException(
+                        string.Format(
+                            "Expression of type \"{0}\" was not handled: {1}",
+                            expression.GetType().Name,
+                            expression.ToString()
+                        )
+                    );
+                }
+            }
         }
     }
 }

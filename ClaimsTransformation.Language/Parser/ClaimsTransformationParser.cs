@@ -21,14 +21,31 @@ namespace ClaimsTransformation.Language.Parser
             var result = default(TokenValue);
             if (!this.TryParse(reader, ClaimsTransformationSyntax.Rule, out result))
             {
-                throw new NotImplementedException();
+                this.OnParseError(reader);
             }
             reader.Align();
             if (!reader.EOF)
             {
-                throw new NotImplementedException();
+                this.OnParseError(reader);
             }
-            return ExpressionFactory.Rule(result.ForChannel(TokenChannel.Normal));
+            try
+            {
+                return ExpressionFactory.Rule(result.ForChannel(TokenChannel.Normal));
+            }
+            catch (ExpressionFactoryException e)
+            {
+                throw new ClaimsTransformationException(e.Message, e);
+            }
+        }
+
+        protected virtual void OnParseError(StringReader reader)
+        {
+            throw new ClaimsTransformationException(
+                string.Format(
+                    "Could not parse expression: Position: {0}",
+                    reader.Max
+                )
+            );
         }
     }
 }

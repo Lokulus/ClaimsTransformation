@@ -359,7 +359,7 @@
                 new[]
                 {
                     new Syntax(
-                        new Token(Terminals.AND, TokenChannel.Normal)
+                        new Token(Terminals.AND)
                     )
                 },
                 SyntaxFlags.Any
