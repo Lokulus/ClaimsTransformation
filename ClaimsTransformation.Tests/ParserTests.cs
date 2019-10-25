@@ -405,7 +405,7 @@ namespace ClaimsTransformation.Tests
             }
             catch (ClaimsTransformationException e)
             {
-                Assert.AreEqual("Expression of type \"IdentifierExpression\" was not handled: asd", e.Message);
+                Assert.AreEqual("Could not parse expression: Position: 8", e.Message);
             }
         }
     }

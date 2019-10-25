@@ -199,25 +199,18 @@
             Expression = new Syntax(
                 new[]
                 {
+                    Value,
                     new Syntax(
                         new[]
                         {
-                            Value,
-                            new Syntax(
-                                new[]
-                                {
-                                    BinaryOperator,
-                                    Value
-                                },
-                                SyntaxFlags.All | SyntaxFlags.Repeat
-                            )
+                            BinaryOperator,
+                            Value
                         },
-                        SyntaxFlags.All
-                    ).WithFactory(ExpressionFactory.Binary),
-                    Value
+                        SyntaxFlags.All | SyntaxFlags.Repeat
+                    )
                 },
-                SyntaxFlags.Any
-            );
+                SyntaxFlags.All
+            ).WithFactory(ExpressionFactory.Binary);
 
             Expressions = new Syntax(
                 new[]
