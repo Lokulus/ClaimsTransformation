@@ -682,5 +682,66 @@ namespace ClaimsTransformation.Tests
 
             Assert.AreEqual(0, fail.Count(), "At least one claim was issued.");
         }
+
+        [Test]
+        public void Error001()
+        {
+            const string EXPRESSION =
+                @"C1:[] " +
+                @"=> ISSUE(CLAIM = C2);";
+
+            var positive = new List<Claim>();
+            positive.Add(new Claim("http://namespace/subject", "aidang"));
+
+            try
+            {
+                var pass = this.Engine.Transform(EXPRESSION, positive);
+                Assert.Fail("Expected error.");
+            }
+            catch (ClaimsTransformationException e)
+            {
+                Assert.AreEqual("Could not resolve claims with identifier \"C2\".", e.Message);
+            }
+        }
+
+        [Test]
+        public void Error002()
+        {
+            const string EXPRESSION =
+                @"C1:[] " +
+                @"=> ISSUE(CLAIM = RegExReplace(C2.Value, ""Cats"", ""Dogs""));";
+
+            var positive = new List<Claim>();
+
+            try
+            {
+                var pass = this.Engine.Transform(EXPRESSION, positive);
+                Assert.Fail("Expected error.");
+            }
+            catch (ClaimsTransformationException e)
+            {
+                Assert.AreEqual("Could not resolve claims with identifier \"C2\".", e.Message);
+            }
+        }
+
+        [Test]
+        public void Error003()
+        {
+            const string EXPRESSION =
+                @"C1:[] " +
+                @"=> ISSUE(CLAIM = RegExReplace(""Cats"", ""Dogs""));";
+
+            var positive = new List<Claim>();
+
+            try
+            {
+                var pass = this.Engine.Transform(EXPRESSION, positive);
+                Assert.Fail("Expected error.");
+            }
+            catch (ClaimsTransformationException e)
+            {
+                Assert.AreEqual("Function \"RegExReplace\" requires exactly 3 arguments but 2 were provided.", e.Message);
+            }
+        }
     }
 }

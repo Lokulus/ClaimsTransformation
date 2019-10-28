@@ -16,12 +16,16 @@ namespace ClaimsTransformation.Engine
             var originalIssuer = ClaimsTransformationSettings.GetDefault(ClaimProperty.ORIGINAL_ISSUER);
             foreach (var property in properties)
             {
+                if (property.Value == null)
+                {
+                    continue;
+                }
                 if (string.Equals(property.Name, ClaimProperty.CLAIM, StringComparison.OrdinalIgnoreCase))
                 {
                     var claim = property.Value as Claim;
                     if (claim == null)
                     {
-                        throw new NotImplementedException();
+                        continue;
                     }
                     type = claim.Type;
                     value = claim.Value;
@@ -49,6 +53,10 @@ namespace ClaimsTransformation.Engine
                 {
                     originalIssuer = Convert.ToString(property.Value);
                 }
+            }
+            if (string.IsNullOrEmpty(type) || string.IsNullOrEmpty(value))
+            {
+                return null;
             }
             return new Claim(type, value, valueType, issuer, originalIssuer);
         }

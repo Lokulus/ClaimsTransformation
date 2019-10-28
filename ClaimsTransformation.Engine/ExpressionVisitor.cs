@@ -72,12 +72,13 @@ namespace ClaimsTransformation.Engine
             {
                 return null;
             }
+            var identifier = expression.Value;
             var claims = default(IEnumerable<Claim>);
-            if (this.ConditionStates.TryGetClaims(expression.Value, out claims))
+            if (!this.ConditionStates.TryGetClaims(expression.Value, out claims))
             {
-                return this.Context.ClaimFactory.Create(claims);
+                throw new ClaimsTransformationException(string.Format("Could not resolve claims with identifier \"{0}\".", identifier));
             }
-            return expression.Value;
+            return this.Context.ClaimFactory.Create(claims);
         }
 
         public object Visit(ClaimPropertyExpression expression)
@@ -121,7 +122,12 @@ namespace ClaimsTransformation.Engine
         {
             var result = new List<object>();
             var identifier = expression.Identifier.Value;
-            foreach (var claim in this.ConditionStates[identifier].Claims)
+            var claims = default(IEnumerable<Claim>);
+            if (!this.ConditionStates.TryGetClaims(identifier, out claims))
+            {
+                throw new ClaimsTransformationException(string.Format("Could not resolve claims with identifier \"{0}\".", identifier));
+            }
+            foreach (var claim in claims)
             {
                 try
                 {
@@ -356,7 +362,9 @@ namespace ClaimsTransformation.Engine
                         throw new NotImplementedException();
                     }
                 }
-                return ClaimProperty.Productize(properties).Select(group => this.Context.ClaimFactory.Create(group));
+                return ClaimProperty.Productize(properties)
+                    .Select(group => this.Context.ClaimFactory.Create(group))
+                    .Where(claim => claim != null);
             };
         }
     }

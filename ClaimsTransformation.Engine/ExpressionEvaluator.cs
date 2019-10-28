@@ -18,7 +18,7 @@ namespace ClaimsTransformation.Engine
             var function = default(Func<ExpressionVisitor, IEnumerable<object>, object>);
             if (!Functions.TryGetValue(Convert.ToString(name), out function))
             {
-                throw new NotImplementedException();
+                throw new ClaimsTransformationException(string.Format("No such function \"{0}\" is defined.", name));
             }
             return function(visitor, arguments);
         }
@@ -29,7 +29,7 @@ namespace ClaimsTransformation.Engine
             var args = arguments.ToArray();
             if (args.Length != 3)
             {
-                throw new NotImplementedException();
+                throw new ClaimsTransformationException(string.Format("Function \"{0}\" requires exactly {1} arguments but {2} were provided.", Terminals.REGEX_REPLACE, 3, args.Length));
             }
             var inputSequence = default(IEnumerable<object>);
             if (!IsSequence(args[0], out inputSequence))

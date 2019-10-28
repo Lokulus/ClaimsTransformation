@@ -408,5 +408,50 @@ namespace ClaimsTransformation.Tests
                 Assert.AreEqual("Could not parse expression: Position: 8", e.Message);
             }
         }
+
+        [Test]
+        public void Error002()
+        {
+            var input = "C1: [] => ISSUE(claim > C1);";
+            try
+            {
+                var actual = this.Parser.Parse(input);
+                Assert.Fail("Expected error.");
+            }
+            catch (ClaimsTransformationException e)
+            {
+                Assert.AreEqual("Could not parse expression: Position: 22", e.Message);
+            }
+        }
+
+        [Test]
+        public void Error003()
+        {
+            var input = "C1:[] => Issue(value = NoSuchFunction(C1.value));";
+            try
+            {
+                var actual = this.Parser.Parse(input);
+                Assert.Fail("Expected error.");
+            }
+            catch (ClaimsTransformationException e)
+            {
+                Assert.AreEqual("Could not parse expression: Position: 37", e.Message);
+            }
+        }
+
+        [Test]
+        public void Error004()
+        {
+            var input = "C1:[] => Issue(Cat = C1.Cat);";
+            try
+            {
+                var actual = this.Parser.Parse(input);
+                Assert.Fail("Expected error.");
+            }
+            catch (ClaimsTransformationException e)
+            {
+                Assert.AreEqual("Could not parse expression: Position: 24", e.Message);
+            }
+        }
     }
 }
