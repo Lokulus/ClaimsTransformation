@@ -684,6 +684,18 @@ namespace ClaimsTransformation.Tests
         }
 
         [Test]
+        public void Scenario028()
+        {
+            const string EXPRESSION = "C1: [] => ISSUE(CLAIM = C1);";
+
+            var positive = new List<Claim>();
+
+            var pass = this.Engine.Transform(EXPRESSION, positive);
+
+            Assert.AreEqual(0, pass.Count(), "At least one claim was issued.");
+        }
+
+        [Test]
         public void Error001()
         {
             const string EXPRESSION =

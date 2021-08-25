@@ -349,7 +349,11 @@ namespace ClaimsTransformation.Engine
                 foreach (var expression in expressions)
                 {
                     var result = this.Visit(expression);
-                    if (result is ClaimProperty)
+                    if (result == null)
+                    {
+                        //Nothing to do.
+                    }
+                    else if (result is ClaimProperty)
                     {
                         properties.Add(result as ClaimProperty);
                     }
