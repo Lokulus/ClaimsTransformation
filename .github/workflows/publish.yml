@@ -1,0 +1,39 @@
+name: Publish
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+
+    - name: Publish (ClaimsTransformation.Language)
+      uses: rohith/publish-nuget@v2
+      with:
+       PROJECT_FILE_PATH: ClaimsTransformation.Language/ClaimsTransformation.Language.csproj
+       NUGET_KEY: ${{secrets.AIDAN_NUGET}}
+
+    - name: Publish (ClaimsTransformation.Engine)
+      uses: rohith/publish-nuget@v2
+      with:
+       PROJECT_FILE_PATH: ClaimsTransformation.Engine/ClaimsTransformation.Engine.csproj
+       NUGET_KEY: ${{secrets.AIDAN_NUGET}}
+
