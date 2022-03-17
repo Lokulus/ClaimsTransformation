@@ -7,11 +7,12 @@ namespace ClaimsTransformation.Engine
 {
     public class ClaimsTransformationEngine : IClaimsTransformationEngine
     {
-        public ClaimsTransformationEngine(IClaimsTransformationParser parser, IClaimsTransformationCache cache, IClaimFactory claimFactory)
+        public ClaimsTransformationEngine(IClaimsTransformationParser parser, IClaimsTransformationCache cache, IClaimFactory claimFactory, ClaimsTransformationFlags flags = ClaimsTransformationFlags.None)
         {
             this.Parser = parser;
             this.Cache = cache;
             this.ClaimFactory = claimFactory;
+            this.Flags = flags;
         }
 
         public IClaimsTransformationParser Parser { get; private set; }
@@ -20,6 +21,8 @@ namespace ClaimsTransformation.Engine
 
         public IClaimFactory ClaimFactory { get; private set; }
 
+        public ClaimsTransformationFlags Flags { get; private set; }
+
         public IEnumerable<Claim> Transform(string rule, IEnumerable<Claim> claims)
         {
             return this.Transform(new[] { rule }, claims);
@@ -27,7 +30,7 @@ namespace ClaimsTransformation.Engine
 
         public IEnumerable<Claim> Transform(IEnumerable<string> rules, IEnumerable<Claim> claims)
         {
-            var context = new ClaimsTransformationContext(this.ClaimFactory, claims);
+            var context = new ClaimsTransformationContext(this.ClaimFactory, claims, this.Flags);
             this.Transform(rules, context);
             return context.Output;
         }

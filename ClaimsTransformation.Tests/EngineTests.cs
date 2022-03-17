@@ -696,6 +696,25 @@ namespace ClaimsTransformation.Tests
         }
 
         [Test]
+        public void Scenario029()
+        {
+            const string EXPRESSION = @"EXISTS([]) => ISSUE(TYPE = ""role"", VALUE = ""anonymous"");";
+
+            var positive = new List<Claim>();
+
+            var engine = new ClaimsTransformationEngine(
+                this.Parser, 
+                this.Cache, 
+                this.ClaimFactory,
+                ClaimsTransformationFlags.UnconditionalExistsIsAlwaysTrue
+            );
+            var pass = engine.Transform(EXPRESSION, positive);
+
+            Assert.IsTrue(this.Utility.HasIssuedClaim(pass, "role", "anonymous"));
+            Assert.AreEqual(1, pass.Count(), "More than one claim was issued.");
+        }
+
+        [Test]
         public void Error001()
         {
             const string EXPRESSION =

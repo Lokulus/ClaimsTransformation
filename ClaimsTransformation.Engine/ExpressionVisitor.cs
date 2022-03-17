@@ -237,7 +237,14 @@ namespace ClaimsTransformation.Engine
                 else
                 {
                     this.ConditionStates[identifier].Claims = Enumerable.Empty<Claim>();
-                    this.ConditionStates[identifier].IsMatch = false;
+                    if (this.Context.Flags.HasFlag(ClaimsTransformationFlags.UnconditionalExistsIsAlwaysTrue))
+                    {
+                        this.ConditionStates[identifier].IsMatch = true;
+                    }
+                    else
+                    {
+                        this.ConditionStates[identifier].IsMatch = false;
+                    }
                 }
             }
             else if (string.Equals(name, Terminals.NOT_EXISTS, StringComparison.OrdinalIgnoreCase))

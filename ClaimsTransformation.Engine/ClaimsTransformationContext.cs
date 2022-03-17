@@ -11,15 +11,18 @@ namespace ClaimsTransformation.Engine
             this.Store = new Dictionary<ClaimStore, IList<Claim>>();
         }
 
-        public ClaimsTransformationContext(IClaimFactory claimFactory, IEnumerable<Claim> input) : this()
+        public ClaimsTransformationContext(IClaimFactory claimFactory, IEnumerable<Claim> input, ClaimsTransformationFlags flags = ClaimsTransformationFlags.None) : this()
         {
             this.ClaimFactory = claimFactory;
             this.Store[ClaimStore.Initial] = input.ToList();
+            this.Flags = flags;
         }
 
         public IDictionary<ClaimStore, IList<Claim>> Store { get; private set; }
 
         public IClaimFactory ClaimFactory { get; private set; }
+
+        public ClaimsTransformationFlags Flags { get; private set; }
 
         public IEnumerable<Claim> Input
         {
