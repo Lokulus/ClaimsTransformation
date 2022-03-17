@@ -11,6 +11,8 @@ namespace ClaimsTransformation.Engine
 
         IEnumerable<Claim> Output { get; }
 
+        ClaimsTransformationFlags Flags { get; }
+
         IEnumerable<Claim> Get(ClaimStore store);
 
         void Add(ClaimStore store, IEnumerable<Claim> claims);
