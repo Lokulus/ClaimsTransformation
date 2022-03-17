@@ -4,14 +4,14 @@
     <TargetFrameworks>net452;net461</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <OutputPath>../distribution</OutputPath>
-    <Version>0.0.5</Version>
-    <AssemblyVersion>0.0.5.0</AssemblyVersion>
-    <FileVersion>0.0.5.0</FileVersion>
-    <PackageProjectUrl>https://github.com/aidan-g/ClaimsTransformation</PackageProjectUrl>
+    <Version>0.0.6</Version>
+    <AssemblyVersion>0.0.6.0</AssemblyVersion>
+    <FileVersion>0.0.6.0</FileVersion>
+    <PackageProjectUrl>https://github.com/Lokulus/ClaimsTransformation</PackageProjectUrl>
     <Authors>aidan</Authors>
     <Company />
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/aidan-g/ClaimsTransformation</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Lokulus/ClaimsTransformation</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>claims adfs authorization security</PackageTags>
   </PropertyGroup>
